@@ -2550,7 +2550,8 @@
     const CARD_WIDTH = 336;
     const GAP = 24;
     const CARD_STEP = CARD_WIDTH + GAP;
-    const CYCLE_WIDTH = CARD_STEP * 8;
+    const TOTAL_CARDS = document.querySelectorAll('.coverflow-card').length;
+    const CYCLE_WIDTH = CARD_STEP * (TOTAL_CARDS / 2);
     const SPEED_PX_PER_SEC = CARD_STEP / 4.5;
     const track = () => document.querySelector('.coverflow__track');
     const stage = () => document.querySelector('.coverflow__stage');
