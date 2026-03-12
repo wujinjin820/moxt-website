@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blog — Moxt</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --white:    #FFFFFF;
+      --gray:     #F3F3F0;
+      --fg:       #212121;
+      --fg-mid:   #3A3A38;
+      --fg-muted: #8A8A85;
+      --fg-faint: #C8C8C3;
+      --border:   #E4E4E0;
+      --green:        #29C16A;
+      --green-hover:  #23A858;
+      --green-light:  #E8F9EF;
+      --serif: 'Lora', Georgia, 'Times New Roman', serif;
+      --sans:  'Inter', system-ui, -apple-system, sans-serif;
+      --fs-display: clamp(3rem, 6.5vw, 6.5rem);
+      --fs-h2:      clamp(2rem, 4.5vw, 4.5rem);
+      --fs-h3:      clamp(1.5rem, 2.5vw, 2.5rem);
+      --fs-body:    1.0625rem;
+      --fs-sm:      0.875rem;
+      --fs-xs:      0.75rem;
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: #F7F7F5;
+      color: var(--fg);
+      font-family: var(--sans);
+      font-size: var(--fs-body);
+      line-height: 1.65;
+      overflow-x: hidden;
+      visibility: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+    body.ready { visibility: visible; }
+    a { color: inherit; text-decoration: none; }
+    ::selection { background: var(--green); color: #fff; }
+
+    .wrap { max-width: 1280px; margin: 0 auto; padding: 0 2.5rem; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-family: var(--sans);
+      font-size: 0.8125rem;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      padding: 0.625rem 1.25rem;
+      border-radius: 99px;
+      cursor: pointer;
+      border: none;
+      white-space: nowrap;
+      transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.25s var(--ease), box-shadow 0.25s;
+      line-height: 1.5;
+    }
+    .btn-green {
+      background: var(--green);
+      color: #fff;
+    }
+    .btn-green:hover {
+      background: var(--green-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(47,184,114,0.25);
+    }
+
+    /* ═══ Nav ═══ */
+    .nav {
+      position: fixed;
+      inset-block-start: 0;
+      inset-inline: 0;
+      z-index: 200;
+      height: 68px;
+      padding: 0 2rem;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      background: rgba(255,255,255,0);
+      backdrop-filter: blur(0px);
+      transition: background 0.35s ease, backdrop-filter 0.35s ease, box-shadow 0.35s ease;
+    }
+    .nav.scrolled {
+      background: rgba(255,255,255,0.82);
+      backdrop-filter: blur(20px);
+      box-shadow: 0 1px 0 rgba(0,0,0,0.06);
+    }
+    .nav__logo { display: flex; align-items: center; line-height: 0; }
+    .nav__logo svg { height: 28px; width: auto; }
+    .nav__links {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      list-style: none;
+    }
+    .nav__links a {
+      position: relative;
+      font-size: 0.9375rem;
+      font-weight: 500;
+      color: var(--fg);
+      padding: 0.5rem 0;
+      transition: color 0.25s ease;
+    }
+    .nav__links a::after {
+      content: '';
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 2px;
+      background: currentColor;
+      transform: scaleX(0);
+      transform-origin: center;
+      transition: transform 0.25s ease;
+    }
+    .nav__links a:hover::after { transform: scaleX(1); }
+    .nav__links a.is-active::after { transform: scaleX(1); }
+    .nav__right { display: flex; justify-content: flex-end; }
+    .nav__right .btn-green {
+      background: #0a0a0a;
+      color: #fff;
+      font-size: 0.8125rem;
+      padding: 0.5rem 1.125rem;
+      height: 36px;
+    }
+    .nav__right .btn-green:hover {
+      background: #212121;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    }
+
+    /* ═══ Hero Header ═══ */
+    .blog-hero {
+      padding: 10rem 2.5rem 4rem;
+      text-align: center;
+    }
+    .blog-hero__title {
+      font-family: var(--serif);
+      font-weight: 600;
+      font-size: var(--fs-h2);
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      color: var(--fg);
+      margin-bottom: 1rem;
+    }
+    .blog-hero__sub {
+      font-size: 1.125rem;
+      color: var(--fg-mid);
+      max-width: 32rem;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    /* ═══ Blog List ═══ */
+    .blog-list {
+      padding: 0 2.5rem 6rem;
+    }
+    .blog-list__inner {
+      max-width: 960px;
+      margin: 0 auto;
+    }
+    .blog-list__divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin-bottom: 0;
+    }
+
+    /* Featured (first) card */
+    .blog-card--featured {
+      display: block;
+      padding: 3rem;
+      margin-bottom: 2rem;
+      background: var(--white);
+      border-radius: 16px;
+      transition: box-shadow 0.35s ease;
+    }
+    .blog-card--featured:hover {
+      box-shadow: 0 8px 32px rgba(0,0,0,0.05);
+    }
+    .blog-card--featured .blog-card__tag {
+      font-size: 0.75rem;
+      padding: 0.3rem 0.875rem;
+      background: var(--green);
+      color: #fff;
+    }
+    .blog-card--featured .blog-card__date {
+      font-size: var(--fs-sm);
+    }
+    .blog-card--featured .blog-card__title {
+      font-family: var(--serif);
+      font-weight: 600;
+      font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+      line-height: 1.2;
+      letter-spacing: -0.03em;
+      color: var(--fg);
+      margin-bottom: 1rem;
+      transition: color 0.3s;
+    }
+    .blog-card--featured:hover .blog-card__title {
+      color: var(--green);
+    }
+    .blog-card--featured .blog-card__summary {
+      font-size: 1.0625rem;
+      color: var(--fg-mid);
+      line-height: 1.75;
+      max-width: 38rem;
+    }
+    .blog-card--featured .blog-card__header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+    }
+    .blog-card--featured .blog-card__arrow {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-top: 1.5rem;
+      font-size: var(--fs-sm);
+      font-weight: 600;
+      color: var(--green);
+      transition: gap 0.3s var(--ease);
+    }
+    .blog-card--featured:hover .blog-card__arrow {
+      gap: 0.75rem;
+    }
+
+    /* Regular cards */
+    .blog-card {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: start;
+      gap: 2rem;
+      padding: 2rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .blog-card:last-child {
+      border-bottom: none;
+    }
+
+    .blog-card__header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.5rem;
+    }
+    .blog-card__date {
+      font-size: var(--fs-xs);
+      font-weight: 500;
+      color: var(--fg-muted);
+      white-space: nowrap;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .blog-card__tag {
+      display: inline-block;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      padding: 0.225rem 0.7rem;
+      border-radius: 99px;
+      letter-spacing: 0.03em;
+      background: var(--green);
+      color: #fff;
+    }
+
+    .blog-card__title {
+      font-family: var(--serif);
+      font-weight: 600;
+      font-size: clamp(1.25rem, 2vw, 1.5rem);
+      line-height: 1.3;
+      letter-spacing: -0.02em;
+      color: var(--fg);
+      margin-bottom: 0.4rem;
+      transition: color 0.25s;
+    }
+    .blog-card:hover .blog-card__title {
+      color: var(--green);
+    }
+
+    .blog-card__summary {
+      font-size: var(--fs-sm);
+      color: var(--fg-mid);
+      line-height: 1.65;
+    }
+
+    .blog-card__arrow-side {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--gray);
+      color: var(--fg-muted);
+      flex-shrink: 0;
+      margin-top: 1rem;
+      transition: background 0.3s, color 0.3s;
+    }
+    .blog-card:hover .blog-card__arrow-side {
+      background: var(--green);
+      color: #fff;
+    }
+
+    /* ═══ Mobile Nav Hamburger ═══ */
+    .nav__hamburger {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.25rem;
+      color: var(--fg);
+      z-index: 210;
+    }
+    .nav__hamburger svg { display: block; }
+    .nav__overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.3);
+      z-index: 199;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .nav__overlay.visible { opacity: 1; }
+    .nav__mobile-menu {
+      display: none;
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 260px;
+      height: 100dvh;
+      background: var(--white);
+      z-index: 201;
+      padding: 5rem 2rem 2rem;
+      flex-direction: column;
+      gap: 0;
+      transform: translateX(100%);
+      transition: transform 0.35s var(--ease);
+      box-shadow: -8px 0 30px rgba(0,0,0,0.08);
+    }
+    .nav__mobile-menu.open { transform: translateX(0); }
+    .nav__mobile-menu a {
+      display: block;
+      font-size: 1.125rem;
+      font-weight: 500;
+      color: var(--fg);
+      padding: 1rem 0;
+      border-bottom: 1px solid #EEEEED;
+      transition: color 0.2s;
+    }
+    .nav__mobile-menu a:last-child { border-bottom: none; }
+    .nav__mobile-menu a:hover { color: var(--green); }
+    .nav__mobile-menu .btn {
+      margin-top: 1.5rem;
+      justify-content: center;
+      width: 100%;
+    }
+
+    /* ═══ Responsive ═══ */
+    @media (max-width: 900px) {
+      .wrap { padding: 0 1.5rem; }
+      .nav { padding: 0 1.25rem; }
+      .nav__links { display: none; }
+      .nav__right { display: none; }
+      .nav__hamburger { display: block; justify-self: end; }
+      .nav__mobile-menu { display: flex; }
+
+      .footer { padding: 2.5rem 1.5rem 1.5rem; }
+      .footer__top {
+        flex-direction: column;
+        gap: 2rem;
+      }
+      .footer__cols { gap: 2rem; }
+    }
+
+    @media (max-width: 680px) {
+      .blog-hero { padding: 7rem 1.5rem 3rem; }
+      .blog-list { padding: 0 1.5rem 4rem; }
+      .blog-card--featured { padding: 2rem 1.5rem; }
+      .blog-card--featured .blog-card__title { font-size: 1.5rem; }
+      .blog-card {
+        grid-template-columns: 1fr;
+        gap: 0;
+      }
+      .blog-card__arrow-side { display: none; }
+    }
+
+    @media (max-width: 640px) {
+      .wrap { padding: 0 1.25rem; }
+      .footer { padding: 2rem 1.25rem 1.5rem; }
+      .footer__top { gap: 1.5rem; }
+      .footer__tagline { font-size: 0.9375rem; max-width: 100%; }
+      .footer__col ul { gap: 1rem; }
+      .footer__col a { font-size: 0.9375rem; }
+      .footer__copy { font-size: 0.8125rem; margin-top: 1.5rem; }
+    }
+
+    @media (max-width: 400px) {
+      .wrap { padding: 0 1rem; }
+      .nav__mobile-menu { width: 100%; }
+    }
+
+    /* ═══ Footer ═══ */
+    .footer {
+      background: var(--white);
+      padding: 3.5rem 2.5rem 2rem;
+    }
+    .footer__inner { max-width: 1280px; margin: 0 auto; }
+    .footer__top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 3rem;
+      padding-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .footer__brand { display: flex; flex-direction: column; gap: 0; }
+    .footer__logo-wrap { display: flex; align-items: center; line-height: 0; margin-bottom: 1.25rem; }
+    .footer__logo-wrap svg { height: 28px; width: auto; }
+    .footer__tagline {
+      font-size: 1rem;
+      color: var(--fg-mid);
+      line-height: 1.6;
+      max-width: 22rem;
+      margin-bottom: 1.5rem;
+    }
+    .footer__social {
+      display: flex;
+      gap: 1.5rem;
+      list-style: none;
+      margin: 0 0 1.5rem 0;
+    }
+    .footer__social a { color: var(--fg-mid); transition: color 0.2s; }
+    .footer__social a:hover { color: var(--green); }
+    .footer__social svg { width: 22px; height: 22px; display: block; }
+    .footer__cols { display: flex; gap: 4rem; }
+    .footer__col h4 {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--fg-muted);
+      margin-bottom: 1rem;
+    }
+    .footer__col ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 1.5rem; }
+    .footer__col a { font-size: 1rem; color: var(--fg-mid); transition: color 0.2s; }
+    .footer__col a:hover { color: var(--green); }
+    .footer__copy {
+      text-align: center;
+      font-size: 0.9375rem;
+      color: var(--fg-muted);
+      margin-top: 2rem;
+      margin-bottom: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav" id="nav">
+    <a href="index.html" class="nav__logo" aria-label="Moxt">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 349.8666 100" fill="none">
+        <defs>
+          <clipPath id="nav-clip-1">
+            <path d="M0 0L236.111 0L236.111 85L0 85L0 0Z" transform="matrix(1 0 0 1 113.756 7.48969)"/>
+          </clipPath>
+        </defs>
+        <g clip-path="url(#nav-clip-1)">
+          <ellipse cx="30.726772" cy="32.684521" rx="30.726772" ry="32.684521" transform="matrix(1 0 0 1 189.479 27.1205)" fill="#212121"/>
+          <ellipse cx="15.69634" cy="16.696428" rx="15.69634" ry="16.696428" transform="matrix(1 0 0 1 204.509 43.1087)" fill="#fff"/>
+          <path d="M65.0685 0L52.7968 0C52.7968 0 51.9406 0.202381 51.7504 0.607143L35.0076 28.131C34.5319 28.9405 33.2953 28.9405 32.8196 28.131L16.3622 0.607143C16.3622 0.607143 15.6963 0 15.2207 0L2.66362 0C1.14155 0 0 1.31548 0 2.83333L0 82.0655C0 83.6845 1.23668 85 2.75875 84.8988L13.6035 84.8988C15.1256 84.7976 16.2671 83.4822 16.2671 81.9643L16.2671 31.4702C16.4574 29.8512 17.5038 31.4702 17.5038 31.4702L31.5829 54.4405C32.6294 56.1607 35.0076 56.1607 36.054 54.4405L50.1332 30.9643C50.1332 30.9643 51.465 28.8393 51.465 30.9643L51.465 81.9643C51.465 83.5834 52.7016 84.7976 54.1286 84.7976L65.0685 84.7976C66.5905 84.7976 67.7321 83.4822 67.7321 81.9643L67.7321 2.83333C67.7321 1.21429 66.4954 0 65.0685 0Z" transform="matrix(1 0 0 1 113.756 7.48969)" fill="#212121"/>
+          <path d="M57.0167 60.6569L39.4178 33.1331C38.847 32.2224 38.847 30.9069 39.4178 29.9962L57.0961 1.72125C58.1425 -0.100178 55.9546 0.0010119 55.9546 0.0010119L56.1448 0.0010119L41.3998 0.0010119C40.5436 0.0010119 39.6874 0.506964 39.1167 1.2153L29.4292 16.2343C28.8584 17.145 27.6217 17.145 27.051 16.2343L17.9186 1.35926C17.4429 0.549741 16.5868 0.0437889 15.6355 0.0437889L1.46119 0.0437889C1.46119 0.0437889 -0.821917 0.0437888 0.319634 1.86522L18.1088 30.0974C18.6796 31.0081 18.6796 32.3235 18.1088 33.2343L0.224503 60.8593C-0.251146 62.0735 0.319634 62.3771 0.60502 62.4783L16.5868 62.4783C17.5381 62.4783 18.4893 61.9723 18.965 61.0616L28.0023 45.5795C28.5731 44.6688 29.8097 44.6688 30.3805 45.5795L39.5129 61.0616C39.9886 61.9723 40.9399 62.4783 41.8912 62.4783L56.446 62.4783C56.446 62.4783 57.3973 62.0735 56.8265 60.6569L57.0167 60.6569Z" transform="matrix(1 0 0 1 250.708 30.1122)" fill="#212121"/>
+          <path d="M34.2466 16.7976L23.7824 16.7976L23.7824 2.83333C23.7824 1.21429 22.5457 0 21.1187 0L11.035 0C9.51295 0 8.37139 1.31548 8.37139 2.83333L8.37139 16.8988L2.5685 16.8988C1.14156 16.8988 0 18.1131 0 19.631L0 27.625C0 29.1429 1.14156 30.3571 2.5685 30.3571L8.46652 30.3571L8.46652 64.9643C8.46652 72.8571 14.5548 79.3333 21.9749 79.3333L34.1515 79.3333C35.6735 79.3333 36.8151 78.0178 36.8151 76.5L36.8151 67.6964C36.8151 65.0655 35.3881 64.5595 34.6271 64.5595L29.8706 64.5595C29.8706 64.5595 23.5921 64.5595 23.7824 58.3869L23.7824 30.3571L34.2466 30.3571C35.6735 30.3571 36.8151 29.1429 36.8151 27.625L36.8151 19.631C36.8151 18.1131 35.6735 16.8988 34.2466 16.8988L34.2466 16.7976Z" transform="matrix(1 0 0 1 313.052 13.2576)" fill="#212121"/>
+        </g>
+        <defs>
+          <clipPath id="nav-clip-2">
+            <path d="M0 0L89.2799 0L89.2799 100L0 100L0 0Z" transform="matrix(1 0 0 1 0 0)"/>
+          </clipPath>
+        </defs>
+        <g clip-path="url(#nav-clip-2)">
+          <path d="M5.45065 78.7379C2.07612 76.7705 0 73.1587 0 69.2536L0 50.2785L0.00659087 50.2752L0 50.2719L0 30.664C0 26.7622 2.07118 23.1537 5.44076 21.1847L39.1465 1.49778C42.5671 -0.499259 46.7985 -0.499259 50.2191 1.49778L83.8392 21.1336C87.2088 23.101 89.2799 26.7112 89.2799 30.613L89.2799 69.5288C89.2799 73.4322 87.2071 77.0424 83.8359 79.0098L50.4383 98.5039C47.0209 100.498 42.7962 100.499 39.3772 98.5089L5.449 78.7395L5.45065 78.7379Z" transform="matrix(1 0 0 1 0 0)" fill="#29C16A"/>
+          <path d="M2.51422e-06 18.0693L2.51422e-06 45.7477C2.51422e-06 47.1993 0.771135 48.5422 2.0234 49.2738L25.9005 63.2217C27.1659 63.9615 28.7329 63.9648 30.0017 63.2316L53.8441 49.4583C55.1063 48.7284 55.8857 47.3806 55.8857 45.9223L55.8857 17.9638C55.8857 16.5122 55.1145 15.1693 53.8606 14.4377L30.0857 0.557341C28.8137 -0.185781 27.2401 -0.185781 25.968 0.557341L2.02176 14.5432C0.767847 15.2748 -0.00163676 16.6176 2.51422e-06 18.0693Z" transform="matrix(1 0 0 1 16.6963 18.1113)" fill="#fff"/>
+          <path d="M0 0L0.00823658 25.8758L22.5507 38.8104L22.5507 12.9L0 0Z" transform="matrix(1 0 0 1 22.2145 36.8347)" fill="#29C16A"/>
+        </g>
+      </svg>
+    </a>
+    <ul class="nav__links">
+      <li><a href="whats-new.html">What's New</a></li>
+      <li><a href="pricing.html">Pricing</a></li>
+    </ul>
+    <div class="nav__right">
+      <a href="#" class="btn btn-green">Get Started Free</a>
+    </div>
+    <button type="button" class="nav__hamburger" aria-label="Menu" id="nav-hamburger">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+  </nav>
+  <div class="nav__overlay" id="nav-overlay"></div>
+  <div class="nav__mobile-menu" id="nav-mobile-menu">
+    <a href="index.html">Home</a>
+    <a href="whats-new.html">What's New</a>
+    <a href="pricing.html">Pricing</a>
+    <a href="blog.html">Blog</a>
+    <a href="#" class="btn btn-green">Get Started Free</a>
+  </div>
+
+
+  <!-- ═══ Hero ═══ -->
+  <section class="blog-hero">
+    <h1 class="blog-hero__title">Blog</h1>
+    <p class="blog-hero__sub">Ideas, updates, and the thinking behind Moxt.</p>
+  </section>
+
+
+  <!-- ═══ Blog List ═══ -->
+  <section class="blog-list">
+    <div class="blog-list__inner">
+
+      <!-- Featured Post -->
+      <a href="blog/context-is-the-new-moat.html" class="blog-card--featured">
+        <div class="blog-card__header">
+          <span class="blog-card__date">May 2, 2025</span>
+          <span class="blog-card__tag blog-card__tag--product">Product</span>
+        </div>
+        <h2 class="blog-card__title">Context Is the New Moat</h2>
+        <p class="blog-card__summary">Why the companies that win with AI will be the ones that organize their context best. The moat isn't the model — it's the context you feed it.</p>
+        <span class="blog-card__arrow">Read article <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </a>
+
+      <hr class="blog-list__divider" />
+
+      <!-- Regular Posts -->
+      <a href="blog/shipping-moxt-canvas.html" class="blog-card">
+        <div>
+          <div class="blog-card__header">
+            <span class="blog-card__date">April 10, 2025</span>
+            <span class="blog-card__tag blog-card__tag--engineering">Engineering</span>
+          </div>
+          <h2 class="blog-card__title">Shipping Moxt Canvas: A Visual Workspace for AI Teams</h2>
+          <p class="blog-card__summary">How we built a real-time collaborative canvas where humans and AI teammates work side by side.</p>
+        </div>
+        <span class="blog-card__arrow-side">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 3l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+      </a>
+
+      <a href="blog/why-we-built-an-autonomous-workspace.html" class="blog-card">
+        <div>
+          <div class="blog-card__header">
+            <span class="blog-card__date">March 18, 2025</span>
+            <span class="blog-card__tag blog-card__tag--manifesto">Manifesto</span>
+          </div>
+          <h2 class="blog-card__title">Why We Built an Autonomous Workspace</h2>
+          <p class="blog-card__summary">AI doesn't lack capability — it lacks an office. Here's why we built Moxt.</p>
+        </div>
+        <span class="blog-card__arrow-side">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 3l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+      </a>
+
+      <a href="blog/small-teams-big-leverage.html" class="blog-card">
+        <div>
+          <div class="blog-card__header">
+            <span class="blog-card__date">February 24, 2025</span>
+            <span class="blog-card__tag blog-card__tag--case-study">Case Study</span>
+          </div>
+          <h2 class="blog-card__title">Small Teams, Big Leverage: The Case for AI-Native Companies</h2>
+          <p class="blog-card__summary">How a 3-person startup ships like a 30-person team using AI teammates in Moxt.</p>
+        </div>
+        <span class="blog-card__arrow-side">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 3l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+      </a>
+
+    </div>
+  </section>
+
+
+  <!-- ═══ Footer ═══ -->
+  <footer class="footer">
+    <div class="footer__inner">
+      <div class="footer__top">
+        <div class="footer__brand">
+          <a href="index.html" class="footer__logo-wrap" aria-label="Moxt">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 349.8666 100" fill="none">
+              <defs><clipPath id="footer-clip-1"><path d="M0 0L236.111 0L236.111 85L0 85L0 0Z" transform="matrix(1 0 0 1 113.756 7.48969)"/></clipPath></defs>
+              <g clip-path="url(#footer-clip-1)">
+                <ellipse cx="30.726772" cy="32.684521" rx="30.726772" ry="32.684521" transform="matrix(1 0 0 1 189.479 27.1205)" fill="#212121"/>
+                <ellipse cx="15.69634" cy="16.696428" rx="15.69634" ry="16.696428" transform="matrix(1 0 0 1 204.509 43.1087)" fill="#fff"/>
+                <path d="M65.0685 0L52.7968 0C52.7968 0 51.9406 0.202381 51.7504 0.607143L35.0076 28.131C34.5319 28.9405 33.2953 28.9405 32.8196 28.131L16.3622 0.607143C16.3622 0.607143 15.6963 0 15.2207 0L2.66362 0C1.14155 0 0 1.31548 0 2.83333L0 82.0655C0 83.6845 1.23668 85 2.75875 84.8988L13.6035 84.8988C15.1256 84.7976 16.2671 83.4822 16.2671 81.9643L16.2671 31.4702C16.4574 29.8512 17.5038 31.4702 17.5038 31.4702L31.5829 54.4405C32.6294 56.1607 35.0076 56.1607 36.054 54.4405L50.1332 30.9643C50.1332 30.9643 51.465 28.8393 51.465 30.9643L51.465 81.9643C51.465 83.5834 52.7016 84.7976 54.1286 84.7976L65.0685 84.7976C66.5905 84.7976 67.7321 83.4822 67.7321 81.9643L67.7321 2.83333C67.7321 1.21429 66.4954 0 65.0685 0Z" transform="matrix(1 0 0 1 113.756 7.48969)" fill="#212121"/>
+                <path d="M57.0167 60.6569L39.4178 33.1331C38.847 32.2224 38.847 30.9069 39.4178 29.9962L57.0961 1.72125C58.1425 -0.100178 55.9546 0.0010119 55.9546 0.0010119L56.1448 0.0010119L41.3998 0.0010119C40.5436 0.0010119 39.6874 0.506964 39.1167 1.2153L29.4292 16.2343C28.8584 17.145 27.6217 17.145 27.051 16.2343L17.9186 1.35926C17.4429 0.549741 16.5868 0.0437889 15.6355 0.0437889L1.46119 0.0437889C1.46119 0.0437889 -0.821917 0.0437888 0.319634 1.86522L18.1088 30.0974C18.6796 31.0081 18.6796 32.3235 18.1088 33.2343L0.224503 60.8593C-0.251146 62.0735 0.319634 62.3771 0.60502 62.4783L16.5868 62.4783C17.5381 62.4783 18.4893 61.9723 18.965 61.0616L28.0023 45.5795C28.5731 44.6688 29.8097 44.6688 30.3805 45.5795L39.5129 61.0616C39.9886 61.9723 40.9399 62.4783 41.8912 62.4783L56.446 62.4783C56.446 62.4783 57.3973 62.0735 56.8265 60.6569L57.0167 60.6569Z" transform="matrix(1 0 0 1 250.708 30.1122)" fill="#212121"/>
+                <path d="M34.2466 16.7976L23.7824 16.7976L23.7824 2.83333C23.7824 1.21429 22.5457 0 21.1187 0L11.035 0C9.51295 0 8.37139 1.31548 8.37139 2.83333L8.37139 16.8988L2.5685 16.8988C1.14156 16.8988 0 18.1131 0 19.631L0 27.625C0 29.1429 1.14156 30.3571 2.5685 30.3571L8.46652 30.3571L8.46652 64.9643C8.46652 72.8571 14.5548 79.3333 21.9749 79.3333L34.1515 79.3333C35.6735 79.3333 36.8151 78.0178 36.8151 76.5L36.8151 67.6964C36.8151 65.0655 35.3881 64.5595 34.6271 64.5595L29.8706 64.5595C29.8706 64.5595 23.5921 64.5595 23.7824 58.3869L23.7824 30.3571L34.2466 30.3571C35.6735 30.3571 36.8151 29.1429 36.8151 27.625L36.8151 19.631C36.8151 18.1131 35.6735 16.8988 34.2466 16.8988L34.2466 16.7976Z" transform="matrix(1 0 0 1 313.052 13.2576)" fill="#212121"/>
+              </g>
+              <defs><clipPath id="footer-clip-2"><path d="M0 0L89.2799 0L89.2799 100L0 100L0 0Z" transform="matrix(1 0 0 1 0 0)"/></clipPath></defs>
+              <g clip-path="url(#footer-clip-2)">
+                <path d="M5.45065 78.7379C2.07612 76.7705 0 73.1587 0 69.2536L0 50.2785L0.00659087 50.2752L0 50.2719L0 30.664C0 26.7622 2.07118 23.1537 5.44076 21.1847L39.1465 1.49778C42.5671 -0.499259 46.7985 -0.499259 50.2191 1.49778L83.8392 21.1336C87.2088 23.101 89.2799 26.7112 89.2799 30.613L89.2799 69.5288C89.2799 73.4322 87.2071 77.0424 83.8359 79.0098L50.4383 98.5039C47.0209 100.498 42.7962 100.499 39.3772 98.5089L5.449 78.7395L5.45065 78.7379Z" transform="matrix(1 0 0 1 0 0)" fill="#29C16A"/>
+                <path d="M2.51422e-06 18.0693L2.51422e-06 45.7477C2.51422e-06 47.1993 0.771135 48.5422 2.0234 49.2738L25.9005 63.2217C27.1659 63.9615 28.7329 63.9648 30.0017 63.2316L53.8441 49.4583C55.1063 48.7284 55.8857 47.3806 55.8857 45.9223L55.8857 17.9638C55.8857 16.5122 55.1145 15.1693 53.8606 14.4377L30.0857 0.557341C28.8137 -0.185781 27.2401 -0.185781 25.968 0.557341L2.02176 14.5432C0.767847 15.2748 -0.00163676 16.6176 2.51422e-06 18.0693Z" transform="matrix(1 0 0 1 16.6963 18.1113)" fill="#fff"/>
+                <path d="M0 0L0.00823658 25.8758L22.5507 38.8104L22.5507 12.9L0 0Z" transform="matrix(1 0 0 1 22.2145 36.8347)" fill="#29C16A"/>
+              </g>
+            </svg>
+          </a>
+          <p class="footer__tagline">The workspace where your AI Agents live, learn, and build — together.</p>
+          <ul class="footer__social">
+            <li><a href="#" aria-label="X"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a></li>
+            <li><a href="#" aria-label="GitHub"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0012 2z"/></svg></a></li>
+            <li><a href="#" aria-label="Email"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 6L12 13 2 6"/></svg></a></li>
+          </ul>
+        </div>
+        <div class="footer__cols">
+          <div class="footer__col">
+            <ul>
+              <li><a href="pricing.html">Pricing</a></li>
+              <li><a href="blog.html">Blog</a></li>
+              <li><a href="whats-new.html">What's New</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <p class="footer__copy">&copy; 2026 Moxt. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    document.body.classList.add('ready');
+
+    (function() {
+      var nav = document.getElementById('nav');
+      function onScroll() {
+        nav.classList.toggle('scrolled', window.scrollY > 20);
+      }
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+    })();
+
+    (function() {
+      var hamburger = document.getElementById('nav-hamburger');
+      var menu = document.getElementById('nav-mobile-menu');
+      var overlay = document.getElementById('nav-overlay');
+      function openMenu() {
+        menu.classList.add('open');
+        overlay.style.display = 'block';
+        requestAnimationFrame(function() { overlay.classList.add('visible'); });
+        document.body.style.overflow = 'hidden';
+      }
+      function closeMenu() {
+        menu.classList.remove('open');
+        overlay.classList.remove('visible');
+        document.body.style.overflow = '';
+        setTimeout(function() { overlay.style.display = 'none'; }, 300);
+      }
+      hamburger.addEventListener('click', function() {
+        menu.classList.contains('open') ? closeMenu() : openMenu();
+      });
+      overlay.addEventListener('click', closeMenu);
+      menu.querySelectorAll('a').forEach(function(a) { a.addEventListener('click', closeMenu); });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,2725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Moxt — Where your agents live and work.</title>
+
+  <!--
+    字体：
+    · Lora   → 经典衬线体（大标题 / 副标题）
+    · Inter  → 正文 / 标签 / 导航
+  -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- GSAP + ScrollTrigger -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <!-- Lenis（异步，失败自动降级） -->
+  <script>
+    (function(){
+      const s = document.createElement('script');
+      s.src = 'https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js';
+      s.async = true;
+      document.head.appendChild(s);
+    })();
+  </script>
+
+  <style>
+    /* ════════════════════════════════════════════════════
+       TOKENS
+    ════════════════════════════════════════════════════ */
+    :root {
+      /* 灰白交替 — 无任何黑底 */
+      --white:    #FFFFFF;
+      --gray:     #F3F3F0;      /* 暖灰，section 交替色 */
+      --fg:       #212121;
+      --fg-mid:   #3A3A38;
+      --fg-muted: #8A8A85;
+      --fg-faint: #C8C8C3;
+      --border:   #E4E4E0;
+
+      /* 主题绿：仅用于按钮 / 标签 / 少量文字强调 */
+      --green:        #29C16A;
+      --green-hover:  #23A858;
+      --green-light:  #E8F9EF;
+
+      /* 字体 */
+      --serif: 'Lora', Georgia, 'Times New Roman', serif;
+      --sans:  'Inter', system-ui, -apple-system, sans-serif;
+      --hand:  var(--sans);  /* Caveat 已移除，署名降级为 Inter 斜体 */
+
+      /* 流式字号 */
+      --fs-display: clamp(3rem, 6.5vw, 6.5rem);
+      --fs-h2:      clamp(2rem,    4.5vw, 4.5rem);
+      --fs-h3:      clamp(1.5rem,  2.5vw, 2.5rem);
+      --fs-manifesto: clamp(1.375rem, 2.5vw, 2.25rem);
+      --fs-body:    1.0625rem;
+      --fs-sm:      0.875rem;
+      --fs-xs:      0.75rem;
+
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* ════════════════════════════════════════════════════
+       RESET
+    ════════════════════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: auto; }
+    body {
+      background: var(--white);
+      color: var(--fg);
+      font-family: var(--sans);
+      font-size: var(--fs-body);
+      line-height: 1.65;
+      overflow-x: hidden;
+      visibility: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+    body.ready { visibility: visible; }
+    a { color: inherit; text-decoration: none; }
+    img { display: block; max-width: 100%; }
+    ::selection { background: var(--green); color: #fff; }
+    ::-webkit-scrollbar { width: 2px; }
+    ::-webkit-scrollbar-thumb { background: var(--green); }
+
+    /* ════════════════════════════════════════════════════
+       LAYOUT
+    ════════════════════════════════════════════════════ */
+    .wrap {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 2.5rem;
+    }
+
+    /* 行揭示动画容器 */
+    .clip { overflow: hidden; display: inline-block; vertical-align: bottom; }
+    .clip-b { overflow: hidden; display: block; }
+
+    /* Section 眉标 */
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: var(--fs-xs);
+      font-weight: 600;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      color: var(--green);
+    }
+    .eyebrow::before {
+      content: '';
+      width: 1.25rem;
+      height: 1.5px;
+      background: var(--green);
+      flex-shrink: 0;
+    }
+
+    /* ════════════════════════════════════════════════════
+       BUTTONS
+    ════════════════════════════════════════════════════ */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-family: var(--sans);
+      font-size: 0.8125rem;       /* 13px — 比正文小一级，更精致 */
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      padding: 0.625rem 1.25rem;  /* 10px 20px — 紧凑但不局促 */
+      border-radius: 99px;
+      cursor: pointer;
+      border: none;
+      white-space: nowrap;
+      transition: background 0.2s, color 0.2s, transform 0.25s var(--ease), box-shadow 0.25s;
+      line-height: 1.5;
+    }
+
+    /* 绿色实心 — 主要 CTA */
+    .btn-green {
+      background: var(--green);
+      color: #fff;
+    }
+    .btn-green:hover {
+      background: var(--green-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(47,184,114,0.25);
+    }
+
+    /* 大号 CTA（Hero / Pricing 区块使用） */
+    .btn-green.btn-lg,
+    .btn-ghost.btn-lg {
+      font-size: var(--fs-sm);
+      padding: 0.75rem 1.5rem;
+    }
+
+    /* 边框 ghost */
+    .btn-ghost {
+      background: transparent;
+      color: var(--fg-mid);
+      border: 1.5px solid var(--border);
+    }
+    .btn-ghost:hover {
+      border-color: var(--green);
+      color: var(--green);
+    }
+
+    /* 文字链接 */
+    .btn-link {
+      background: transparent;
+      color: var(--fg-mid);
+      padding: 0.625rem 0;
+      font-weight: 500;
+    }
+    .btn-link:hover { color: var(--fg); }
+
+    /* ════════════════════════════════════════════════════
+       NAV
+    ════════════════════════════════════════════════════ */
+    .nav {
+      position: fixed;
+      inset-block-start: 0;
+      inset-inline: 0;
+      z-index: 200;
+      height: 68px;
+      padding: 0 2rem;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      background: rgba(255,255,255,0);
+      backdrop-filter: blur(0px);
+      -webkit-backdrop-filter: blur(0px);
+      transition: background 0.35s ease, backdrop-filter 0.35s ease, box-shadow 0.35s ease;
+    }
+    .nav.scrolled {
+      background: rgba(255,255,255,0.82);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 1px 0 rgba(0,0,0,0.06);
+    }
+
+    /* SVG Logo */
+    .nav__logo {
+      display: flex;
+      align-items: center;
+      line-height: 0;
+    }
+    .nav__logo svg {
+      height: 28px;
+      width: auto;
+    }
+
+    /* 居中导航链接组 — 参考 Habito 风格：细下划线 hover */
+    .nav__links {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      list-style: none;
+    }
+    .nav__links a {
+      position: relative;
+      display: block;
+      font-size: 0.9375rem;
+      font-weight: 500;
+      color: var(--fg);
+      padding: 0.5rem 0;
+      white-space: nowrap;
+      transition: color 0.25s ease;
+    }
+    .nav__links a::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 2px;
+      background: currentColor;
+      transform: scaleX(0);
+      transform-origin: center;
+      transition: transform 0.25s ease;
+    }
+    .nav__links a:hover::after {
+      transform: scaleX(1);
+    }
+    .nav__links a:hover {
+      color: var(--fg);
+    }
+
+    /* 右侧 CTA 对齐到最右 — 黑色按钮 */
+    .nav__right {
+      display: flex;
+      justify-content: flex-end;
+    }
+    .nav__right .btn-green {
+      background: #0a0a0a;
+      color: #fff;
+      font-size: 0.8125rem;
+      padding: 0.5rem 1.125rem;
+      height: 36px;
+      box-sizing: border-box;
+    }
+    .nav__right .btn-green:hover {
+      background: #212121;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    }
+
+    /* ════════════════════════════════════════════════════
+       HERO  — 白色背景
+    ════════════════════════════════════════════════════ */
+    .hero {
+      background: #F7F7F5;
+      padding-top: 64px;
+    }
+
+    .hero__inner {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 11rem 2.5rem 9rem;
+      display: grid;
+      grid-template-columns: 9fr 11fr;  /* 右图略宽，与标题平衡 */
+      align-items: center;
+      gap: 4rem;
+    }
+
+    .hero__left {
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* 右栏：配图放大，与标题视觉平衡 */
+    .hero__right {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transform: translateY(20px);
+      min-width: 0;
+    }
+
+    .hero__illus {
+      width: 100%;
+      max-width: none;
+      height: auto;
+      display: block;
+      background: transparent;
+      object-fit: contain;
+    }
+
+    .hero__eyebrow {
+      margin-bottom: 2rem;
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    /* 大标题 */
+    .hero__h1 {
+      font-family: var(--serif);
+      font-weight: 600;
+      font-size: var(--fs-display);
+      line-height: 1.0;
+      letter-spacing: -0.03em;
+      margin-bottom: 3rem;
+      max-width: none;
+    }
+
+    .hero__h1 em {
+      font-style: normal;
+      font-weight: 600;
+      color: var(--green);
+    }
+
+    /* 行揭示内层
+       padding + 负 margin 补偿 Lora 衬线在 overflow:hidden 下被裁切的问题 */
+    .h1-line {
+      display: block;
+      /* 行高收紧时需更大垂直 padding，避免 y/g 等 descender 被裁切 */
+      overflow: hidden;
+      padding: 0.18em 0.14em;
+      margin: -0.18em -0.14em;
+    }
+    .h1-line-inner {
+      display: block;
+      transform: translateY(105%);
+      opacity: 0;
+    }
+
+    /* 底部副文 + CTA 纵向堆叠 */
+    .hero__foot {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 2rem;
+      opacity: 0;
+      transform: translateY(16px);
+    }
+
+    .hero__sub {
+      font-size: clamp(1rem, 1.2vw, 1.125rem);
+      font-weight: 400;
+      color: var(--fg);
+      line-height: 1.75;
+      max-width: calc(32rem + 24px);
+    }
+
+    .hero__actions { display: flex; align-items: center; gap: 0.75rem; }
+
+    /* 底部统计横条 */
+
+    /* ════════════════════════════════════════════════════
+       MANIFESTO  — 灰色背景
+    ════════════════════════════════════════════════════ */
+    .manifesto {
+      background: var(--white);
+      padding: 5rem 2.5rem;
+    }
+
+    .manifesto__inner {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    .manifesto__title {
+      font-family: var(--serif);
+      font-weight: 600;
+      font-size: var(--fs-h2);
+      line-height: 1.0;
+      letter-spacing: -0.03em;
+      color: var(--fg);
+      margin-bottom: 4rem;
+      opacity: 0;
+      transform: translateY(24px);
+    }
+
+    .manifesto__eyebrow {
+      margin-bottom: 2rem;
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    .m-para {
+      font-family: var(--serif);
+      font-weight: 400;
+      font-size: 1.375rem;
+      line-height: 1.5;
+      color: #0a0a0a;
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    .m-climax {
+      font-family: var(--serif);
+      font-weight: 600;
+      font-size: 1.375rem;
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+      color: #0a0a0a;
+      margin-top: 2.5rem;
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    .m-author {
+      font-family: var(--sans);
+      font-size: 1.125rem;
+      font-weight: 400;
+      font-style: italic;
+      color: var(--fg-mid);
+      display: block;
+      text-align: right;
+      opacity: 0;
+      transform: translateX(16px);
+    }
+
+    /* ════════════════════════════════════════════════════
+       CONTEXT IN. MAGIC OUT. — 侧边粘性滚动
+    ════════════════════════════════════════════════════ */
+    .context-magic {
+      background: var(--gray);
+      padding: 6rem 2.5rem 8rem;
+    }
+    .context-magic__inner { max-width: 1440px; margin: 0 auto; }
+    .context-magic__title {
+      font-family: var(--serif);
+      font-weight: 600;
+      font-size: var(--fs-h2);
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      color: var(--fg);
+      margin-bottom: 0;
+    }
+    .context-magic__wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: start;
+    }
+    .context-magic__left {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .cm-step {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding-bottom: 2rem;
+      max-width: 30rem;
+    }
+    .context-magic__right {
+      position: sticky;
+      top: 15vh;
+      height: 70vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .cm-visuals {
+      position: relative;
+      width: 100%;
+      max-width: 640px;
+      aspect-ratio: 1 / 1;
+    }
+    /* 层级1：标题 */
+    .cm-step__title {
+      font-family: var(--serif);
+      font-weight: 600;
+      font-size: clamp(1.75rem, 2.5vw, 2.5rem);
+      line-height: 1.1;
+      letter-spacing: -0.025em;
+      color: #0a0a0a;
+      margin-bottom: 1.25rem;
+    }
+    /* 层级2：内容 — 加粗小标（hook）+ 正文 */
+    .cm-step__hook {
+      font-family: var(--sans);
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: #0a0a0a;
+      line-height: 1.55;
+      margin-bottom: 0.75rem;
+      max-width: 30rem;
+      hyphens: none;
+    }
+    .cm-step__body {
+      font-size: 16px;
+      font-weight: 400;
+      line-height: 1.8;
+      color: #0a0a0a;
+      max-width: 30rem;
+      margin-bottom: 1.75rem;
+      hyphens: none;
+    }
+    /* 层级3：绿色强调文字 */
+    .cm-step__tag {
+      display: inline-block;
+      font-family: var(--serif);
+      font-size: 18px;
+      font-weight: 500;
+      font-style: italic;
+      color: #1a7d3a;
+      hyphens: none;
+    }
+
+
+    .cm-visual {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+    .cm-visual.active { opacity: 1; z-index: 1; pointer-events: auto; }
+    .cm-visual__img {
+      width: 100%;
+      height: 100%;
+      border-radius: 20px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .cm-visual[data-cm-visual="1"] .cm-visual__img { background: #F0EFEB; border: 1px solid #D4D2CE; }
+    .cm-visual[data-cm-visual="2"] .cm-visual__img { background: #EDECEA; border: 1px solid #C5C7C3; }
+    .cm-visual[data-cm-visual="3"] .cm-visual__img { background: #F2F1ED; border: 1px solid #CFCDC8; }
+    .cm-visual__img .cm-illus,
+    .cm-visual__img svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .cm-visual__img img {
+      width: 100%; height: 100%;
+      object-fit: contain;
+      mix-blend-mode: multiply;
+    }
+    @media (max-width: 900px) {
+      .context-magic__wrap {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+      .context-magic__right {
+        position: static;
+        height: auto;
+        min-height: 300px;
+        order: -1;
+      }
+      .cm-visuals {
+        position: relative;
+        width: 100%;
+        max-width: 100%;
+        aspect-ratio: 1 / 1;
+      }
+      .cm-visual { opacity: 0; }
+      .cm-visual.active { opacity: 1; }
+      .cm-step { min-height: auto; padding-bottom: 3rem; max-width: 100%; }
+    }
+
+    /* ════════════════════════════════════════════════════
+       COVER FLOW — 3D 旋转木马
+    ════════════════════════════════════════════════════ */
+    .coverflow-section {
+      background: var(--white);
+      padding: 8rem 0 10rem;
+      width: 100vw;
+      margin-left: calc(-50vw + 50%);
+      overflow-x: hidden;
+    }
+    .coverflow-section__inner {
+      max-width: none;
+      width: 100%;
+      margin: 0;
+      text-align: center;
+      padding: 0 2rem;
+    }
+    .coverflow-section__eyebrow {
+      font-family: var(--serif);
+      font-size: 18px;
+      font-weight: 500;
+      font-style: italic;
+      color: var(--green);
+      line-height: 1.4;
+      margin-bottom: 0.75rem;
+    }
+    .coverflow-section__title {
+      font-family: var(--serif);
+      font-weight: 600;
+      font-size: var(--fs-h2);
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+      color: var(--fg);
+      margin-bottom: 1rem;
+    }
+    .coverflow-section__sub {
+      font-size: 1.125rem;
+      color: var(--fg-mid);
+      line-height: 1.6;
+      max-width: 36rem;
+      margin: 0 auto 5rem;
+    }
+    .coverflow {
+      position: relative;
+      min-height: 420px;
+      overflow: hidden;
+    }
+    .coverflow {
+      margin: 0 -2rem;
+    }
+    .coverflow__stage {
+      position: relative;
+      width: 100vw;
+      max-width: none;
+      margin-left: calc(-50vw + 50%);
+      overflow: hidden;
+      touch-action: pan-y;
+      user-select: none;
+    }
+    .coverflow__track {
+      display: flex;
+      gap: 1.5rem;
+      padding: 2rem 0;
+      justify-content: flex-start;
+      align-items: stretch;
+    }
+    .coverflow-card {
+      flex: 0 0 336px;
+      width: 336px;
+      cursor: pointer;
+      display: flex;
+      align-items: stretch;
+    }
+    .coverflow--drag .coverflow-card { cursor: grab; }
+    .coverflow-card--active { cursor: default; }
+    .coverflow-card__inner {
+      background: #fff;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      transition: box-shadow 0.3s ease;
+    }
+    .coverflow-card--active .coverflow-card__inner {
+      box-shadow: 0 20px 60px -15px rgba(0,0,0,0.2);
+    }
+    .coverflow-card__inner {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      border: none;
+      outline: none;
+    }
+    .coverflow-card__illus {
+      flex-shrink: 0;
+      height: 224px;
+      width: 100%;
+    }
+    .coverflow-card__body {
+      flex: 1;
+      min-height: 0;
+      padding: 1.25rem 1.5rem 1.5rem;
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .coverflow-card__time {
+      display: flex;
+      align-items: center;
+      gap: 0.625rem;
+      font-family: var(--serif);
+      font-size: 1.125rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      color: var(--fg);
+      margin-bottom: 0;
+    }
+    .coverflow-card__dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      flex-shrink: 0;
+      box-shadow: 0 0 0 2px rgba(41, 193, 106, 0.35);
+      animation: coverflow-dot-breathe 2s ease-in-out infinite;
+    }
+    @keyframes coverflow-dot-breathe {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.8; transform: scale(1.35); }
+    }
+    .coverflow-card__agent,
+    .coverflow-card__you {
+      font-size: 0.8125rem;
+      line-height: 1.55;
+      color: var(--fg-mid);
+      margin-bottom: 0;
+      padding-left: 0.75rem;
+      border-left: 2px solid var(--border);
+    }
+    .coverflow-card__agent {
+      padding-top: 0.25rem;
+    }
+    .coverflow-card__you {
+      padding-top: 0.5rem;
+      border-left-color: var(--border);
+    }
+    .coverflow-card--cycle .coverflow-card__inner {
+      background: #F7F7F5;
+    }
+    .coverflow-card--cycle .coverflow-card__illus {
+      background: #F7F7F5 !important;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 2rem;
+      gap: 0.5rem;
+      flex: 1;
+      min-height: 224px;
+    }
+    .coverflow-card__cycle-time {
+      font-family: var(--serif);
+      font-size: clamp(1.75rem, 4vw, 2.5rem);
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: var(--fg);
+    }
+    .coverflow-card--cycle .coverflow-card__cycle-arrow {
+      font-size: 2rem;
+      color: var(--fg);
+      line-height: 1;
+      display: block;
+      margin-bottom: 1rem;
+    }
+    .coverflow-card--cycle .coverflow-card__cycle {
+      font-size: 0.9375rem;
+      color: var(--fg-mid);
+      line-height: 1.5;
+      margin: 0;
+    }
+    .coverflow-card__time--arrow .coverflow-card__dot { display: none; }
+    .coverflow-card__agent strong,
+    .coverflow-card__you strong {
+      display: block;
+      font-family: var(--sans);
+      font-size: 0.6875rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--fg-muted);
+      margin-bottom: 0.2rem;
+    }
+    @media (max-width: 900px) {
+      .coverflow-section { padding: 6rem 2rem 8rem; }
+      .coverflow { margin: 0; }
+      .coverflow__stage {
+        width: 100%;
+        margin-left: 0;
+      }
+    }
+
+    /* ════════════════════════════════════════════════════
+       SELLING POINTS  — 白色背景
+    ════════════════════════════════════════════════════ */
+    .selling {
+      background: var(--gray);
+      padding: 8rem 0;
+    }
+
+    .selling__head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 2rem;
+      flex-wrap: wrap;
+      padding: 0 2.5rem;
+      max-width: 1280px;
+      margin: 0 auto 5rem;
+    }
+
+    .selling__title {
+      font-family: var(--serif);
+      font-weight: 600;
+      font-size: var(--fs-h2);
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+      max-width: 16ch;
+    }
+    .selling__title em { font-style: italic; font-weight: 300; color: var(--green); }
+
+    .selling__desc {
+      font-size: var(--fs-sm);
+      color: var(--fg-muted);
+      line-height: 1.75;
+      max-width: 22rem;
+    }
+
+    /* Tabs 容器 */
+    .tabs-section {
+      background: var(--gray);
+      padding: 4rem 2.5rem 8rem;
+    }
+    .tabs-section__inner { max-width: 1280px; margin: 0 auto; }
+    .tabs-nav {
+      display: flex;
+      gap: 2.5rem;
+      margin-bottom: 4rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.5rem;
+    }
+    .tabs-nav__btn {
+      font-family: var(--sans);
+      font-size: 1.0625rem;
+      font-weight: 500;
+      color: var(--fg-mid);
+      background: none;
+      border: none;
+      padding: 0.5rem 0;
+      cursor: pointer;
+      position: relative;
+      transition: color 0.25s ease;
+    }
+    .tabs-nav__btn::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -0.5rem;
+      height: 2px;
+      background: currentColor;
+      transform: scaleX(0);
+      transition: transform 0.25s ease;
+    }
+    .tabs-nav__btn:hover { color: var(--fg); }
+    .tabs-nav__btn.active {
+      color: var(--fg);
+    }
+    .tabs-nav__btn.active::after { transform: scaleX(1); }
+    .tabs-panel { display: none; }
+    .tabs-panel.active { display: block; }
+    .tabs-panel .selling { padding: 2rem 0 4rem; }
+    .tabs-panel .showcase { padding: 2rem 2.5rem 4rem; }
+
+    /* 每个卖点 */
+    .sp {
+      display: grid;
+      grid-template-columns: 5fr 7fr;
+      gap: 4rem;
+      align-items: start;
+      padding: 3.5rem 2.5rem;
+      border-top: 1px solid var(--border);
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+    .sp:last-of-type { border-bottom: 1px solid var(--border); }
+
+    .sp__num {
+      font-size: var(--fs-xs);
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      color: var(--fg-faint);
+      text-transform: uppercase;
+      margin-bottom: 1.25rem;
+    }
+
+    .sp__title {
+      font-family: var(--serif);
+      font-weight: 600;
+      font-size: var(--fs-h3);
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.6rem;
+    }
+
+    .sp__hook {
+      font-size: var(--fs-sm);
+      font-weight: 500;
+      color: var(--green);
+    }
+
+    .sp__right { padding-top: 3rem; }
+
+    .sp__body {
+      color: var(--fg-mid);
+      line-height: 1.8;
+      margin-bottom: 1.5rem;
+    }
+
+    .sp__tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: var(--fs-xs);
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--green);
+      background: var(--green-light);
+      padding: 0.35rem 0.8rem;
+      border-radius: 10px;
+    }
+
+    /* ════════════════════════════════════════════════════
+       SHOWCASE  — 灰色背景 + Bento Grid
+    ════════════════════════════════════════════════════ */
+    .showcase {
+      background: var(--white);
+      padding: 8rem 2.5rem;
+    }
+    .showcase--gray { background: var(--gray); }
+
+    .showcase__inner { max-width: 1280px; margin: 0 auto; }
+
+    .showcase__head { margin-bottom: 3.5rem; }
+
+    .showcase__eyebrow { margin-bottom: 1.25rem; opacity: 0; transform: translateY(10px); }
+
+    .showcase__title {
+      font-family: var(--serif);
+      font-weight: 600;
+      font-size: var(--fs-h2);
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+      margin-bottom: 0.75rem;
+    }
+
+    .showcase__sub {
+      font-size: var(--fs-body);
+      color: var(--fg-mid);
+      max-width: 34rem;
+    }
+
+    /* 4 列 Bento */
+    .bento {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--gray);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    .bc {
+      background: var(--white);
+      padding: 1.75rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 220px;
+      position: relative;
+      opacity: 0;
+      transform: translateY(14px);
+      transition: background 0.2s;
+    }
+    .bc:hover { background: var(--green-light); }
+    .bc:hover .bc-arrow { opacity: 1; transform: translate(0,0); }
+
+    .bc-top { display: flex; align-items: flex-start; justify-content: space-between; }
+
+    .bc-icon {
+      width: 4.5rem;
+      height: 4.5rem;
+      flex-shrink: 0;
+      color: var(--fg);
+    }
+
+    .bc-arrow {
+      color: var(--green);
+      opacity: 0;
+      transform: translate(-5px, 5px);
+      transition: all 0.25s var(--ease);
+      flex-shrink: 0;
+    }
+
+    .bc-name {
+      font-family: var(--serif);
+      font-weight: 700;
+      font-size: 18px;
+      color: var(--fg);
+      line-height: 1.3;
+      margin-bottom: 0.35rem;
+    }
+
+    .bc-desc {
+      font-size: 14px;
+      color: var(--fg);
+      line-height: 1.5;
+    }
+
+    /* ════════════════════════════════════════════════════
+       COMPARE — Not better. Just different. 4 浮动呼吸卡片
+    ════════════════════════════════════════════════════ */
+    .compare-section {
+      background: var(--white);
+      padding: 8rem 2.5rem 10rem;
+    }
+    .compare__inner { max-width: 1280px; margin: 0 auto; }
+    .compare__head { text-align: center; margin-bottom: 4rem; }
+    .compare__title {
+      font-family: var(--serif);
+      font-weight: 600;
+      font-size: var(--fs-h2);
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+      color: var(--fg);
+      margin-bottom: 0.75rem;
+    }
+    .compare__sub {
+      font-size: 1.125rem;
+      color: var(--fg-mid);
+      line-height: 1.6;
+    }
+    .compare__grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+      align-items: stretch;
+    }
+    .compare-card {
+      position: relative;
+      background: var(--gray);
+      border-radius: 24px;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      animation: compare-float 4s ease-in-out infinite;
+      overflow: hidden;
+      transition: background 0.35s ease;
+    }
+    .compare-card:hover {
+      background: var(--green);
+    }
+    .compare-card:hover .compare-card__content { opacity: 0; }
+    .compare-card:hover .compare-card__hover { opacity: 1; }
+    .compare-card__content {
+      transition: opacity 0.35s ease;
+    }
+    .compare-card__hover {
+      position: absolute;
+      inset: 0;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.35s ease;
+    }
+    .compare-card__hover-title {
+      font-family: var(--serif);
+      font-size: 1.75rem;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 1rem;
+      line-height: 1.2;
+      max-width: 260px;
+      text-align: left;
+    }
+    .compare-card__hover-text {
+      font-family: var(--serif);
+      font-size: 18px;
+      line-height: 1.6;
+      color: #fff;
+      font-weight: 600;
+      max-width: 260px;
+      text-align: left;
+    }
+    .compare-card:nth-child(1) { animation-delay: 0s; }
+    .compare-card:nth-child(2) { animation-delay: 0.5s; }
+    .compare-card:nth-child(3) { animation-delay: 1s; }
+    .compare-card:nth-child(4) { animation-delay: 1.5s; }
+    @keyframes compare-float {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-12px) scale(1.03); }
+    }
+    .compare-card__title {
+      font-family: var(--serif);
+      font-weight: 600;
+      font-size: 1.375rem;
+      color: #111;
+      margin-bottom: 0.75rem;
+    }
+    .compare-card__desc {
+      font-size: 0.875rem;
+      color: #111;
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+      flex: 1;
+    }
+    .compare-card__illus {
+      width: 100%;
+      aspect-ratio: 3 / 2;
+      background: var(--white);
+      border-radius: 12px;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--fg-faint);
+      font-size: 2rem;
+    }
+    .compare-card__limit {
+      font-size: 0.8125rem;
+      color: #0d5c2e;
+      font-weight: 500;
+      line-height: 1.5;
+      margin-bottom: 0.75rem;
+    }
+    .compare-card__moxt {
+      font-size: 0.8125rem;
+      color: #111;
+      line-height: 1.5;
+    }
+    @media (max-width: 1024px) {
+      .compare__grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 600px) {
+      .compare__grid { grid-template-columns: 1fr; }
+    }
+
+    /* ════════════════════════════════════════════════════
+       CONVERGENCE — Scroll-Driven Brand Animation
+    ════════════════════════════════════════════════════ */
+    .conv-section {
+      position: relative;
+      height: 500vh;
+    }
+    .conv-sticky {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow: hidden;
+      background: var(--gray);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      box-sizing: border-box;
+    }
+    .conv-icons-layer {
+      position: absolute;
+      inset: 64px;
+      pointer-events: none;
+    }
+    .conv-icon {
+      position: absolute;
+      left: 50%; top: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .conv-icon__box {
+      width: 80px;
+      height: 80px;
+      border-radius: 18px;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      padding: 14px 10px 10px 10px;
+      box-sizing: border-box;
+      overflow: visible;
+    }
+    .conv-icon__box svg {
+      width: 36px;
+      height: 36px;
+      display: block;
+      flex-shrink: 0;
+    }
+    .conv-icon__label {
+      font-size: 0.875rem;
+      font-family: var(--sans);
+      font-weight: 600;
+      color: var(--fg);
+      text-align: center;
+      white-space: nowrap;
+    }
+    .conv-glow-wrap {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      opacity: 0;
+    }
+    .conv-glow {
+      width: 340px;
+      height: 340px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(41,193,106,0.65) 0%, rgba(41,193,106,0.12) 45%, transparent 72%);
+      filter: blur(6px);
+    }
+    .conv-phrase-1,
+    .conv-phrase-2,
+    .conv-cta-wrap {
+      position: absolute;
+      top: 0; bottom: 0;
+      left: 0; right: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem;
+      pointer-events: none;
+      opacity: 0;
+    }
+    .conv-headline {
+      font-family: var(--serif);
+      font-size: clamp(2.4rem, 5vw, 4.5rem);
+      font-weight: 600;
+      color: var(--fg);
+      line-height: 1.2;
+      letter-spacing: -0.03em;
+    }
+    .conv-headline .conv-em {
+      color: var(--green);
+      font-style: italic;
+      vertical-align: baseline;
+    }
+    .conv-moxt-text {
+      font-family: var(--serif);
+      font-size: clamp(3rem, 8vw, 7rem);
+      font-weight: 700;
+      color: var(--fg);
+      line-height: 1.2;
+      letter-spacing: -0.04em;
+      white-space: nowrap;
+    }
+    .conv-moxt-text span {
+      display: inline-block;
+      vertical-align: baseline;
+    }
+    .m-re,
+    .m-conte {
+      overflow: hidden;
+      color: var(--fg-muted);
+    }
+    .m-sp {
+      width: 0.25em;
+      display: inline-block;
+      vertical-align: baseline;
+    }
+    .conv-cta-wrap {
+      gap: 2rem;
+      pointer-events: none;
+    }
+    .conv-cta-wrap .btn-green {
+      pointer-events: all;
+      height: 56px;
+      padding: 0 2rem;
+      font-size: 1rem;
+    }
+    .conv-cta-brand {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+    }
+    .conv-cta-logo {
+      flex-shrink: 0;
+    }
+    .conv-cta-logo svg {
+      height: 80px;
+      width: auto;
+      display: block;
+    }
+    .conv-cta-moxt {
+      font-family: var(--serif);
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      font-weight: 700;
+      color: var(--fg);
+      letter-spacing: -0.04em;
+      line-height: 1;
+    }
+    .conv-cta-sub {
+      font-size: 1.125rem;
+      color: var(--fg-mid);
+      max-width: 34rem;
+      line-height: 1.65;
+      margin: 0;
+    }
+
+    /* ════════════════════════════════════════════════════
+       FOOTER  — 白色背景，左品牌/社交 + 右双栏链接 + 底版权
+    ════════════════════════════════════════════════════ */
+    .footer {
+      background: var(--white);
+      padding: 3.5rem 2.5rem 2rem;
+    }
+
+    .footer__inner {
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+
+    .footer__top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 3rem;
+      padding-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .footer__brand {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .footer__logo-wrap {
+      display: flex;
+      align-items: center;
+      line-height: 0;
+      margin-bottom: 1.25rem;
+    }
+
+    .footer__logo-wrap svg {
+      height: 28px;
+      width: auto;
+    }
+
+    .footer__tagline {
+      font-size: 1rem;
+      color: var(--fg-mid);
+      line-height: 1.6;
+      max-width: 22rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .footer__social {
+      display: flex;
+      gap: 1.5rem;
+      list-style: none;
+      margin: 0 0 1.5rem 0;
+    }
+
+    .footer__social a {
+      color: var(--fg-mid);
+      transition: color 0.2s;
+    }
+
+    .footer__social a:hover { color: var(--green); }
+
+    .footer__social svg {
+      width: 22px;
+      height: 22px;
+      display: block;
+    }
+
+    .footer__lang {
+      position: relative;
+      display: inline-block;
+    }
+
+    .footer__lang-trigger {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.9375rem;
+      font-weight: 500;
+      color: var(--fg);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.25em 0;
+      font-family: inherit;
+      transition: color 0.2s;
+    }
+
+    .footer__lang-trigger:hover { color: var(--green); }
+
+    .footer__lang-arrow {
+      width: 10px;
+      height: 10px;
+      color: var(--fg-muted);
+      transition: transform 0.2s, color 0.2s;
+    }
+
+    .footer__lang.open .footer__lang-arrow {
+      transform: rotate(180deg);
+      color: var(--green);
+    }
+
+    .footer__lang-drop {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      margin-top: 0.35rem;
+      min-width: 7rem;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      padding: 0.35rem 0;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-4px);
+      transition: opacity 0.2s, transform 0.2s, visibility 0.2s;
+      z-index: 10;
+    }
+
+    .footer__lang.open .footer__lang-drop {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .footer__lang-drop a {
+      display: block;
+      padding: 0.45rem 1rem;
+      font-size: 0.9375rem;
+      color: var(--fg-mid);
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .footer__lang-drop a:hover {
+      background: var(--green-light);
+      color: var(--green);
+    }
+
+    .footer__lang-drop a.is-active {
+      color: var(--fg);
+      font-weight: 600;
+      background: transparent;
+    }
+
+    .footer__cols {
+      display: flex;
+      gap: 4rem;
+    }
+
+    .footer__col h4 {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--fg-muted);
+      margin-bottom: 1rem;
+    }
+
+    .footer__col ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+    }
+
+    .footer__col li { margin-bottom: 0; }
+
+    .footer__col a {
+      font-size: 1rem;
+      color: var(--fg-mid);
+      transition: color 0.2s;
+    }
+
+    .footer__col a:hover { color: var(--green); }
+
+    .footer__copy {
+      text-align: center;
+      font-size: 0.9375rem;
+      color: var(--fg-muted);
+      margin-top: 2rem;
+      margin-bottom: 0;
+    }
+    /* ════════════════════════════════════════════════════
+       MOBILE RESPONSIVE — ≤768px
+    ════════════════════════════════════════════════════ */
+    @media (max-width: 768px) {
+
+      /* --- Layout --- */
+      .wrap { padding: 0 1.25rem; }
+
+      /* --- Nav --- */
+      .nav {
+        height: 56px;
+        padding: 0 1rem;
+        grid-template-columns: 1fr auto;
+      }
+      .nav__links { display: none; }
+      .nav__logo svg { height: 22px; }
+      .nav__right .btn-green {
+        font-size: 0.75rem;
+        padding: 0.4rem 0.9rem;
+        height: 32px;
+      }
+
+      /* --- Hero --- */
+      .hero { padding-top: 56px; }
+      .hero__inner {
+        grid-template-columns: 1fr;
+        padding: 5rem 1.25rem 4rem;
+        gap: 2.5rem;
+      }
+      .hero__right { order: -1; }
+      .hero__h1 {
+        font-size: clamp(2rem, 8vw, 3rem);
+        margin-bottom: 1.5rem;
+      }
+      .hero__eyebrow { margin-bottom: 1rem; }
+      .hero__sub { font-size: 0.9375rem; }
+      .hero__foot { gap: 1.25rem; }
+      .hero__actions { flex-wrap: wrap; }
+
+      /* --- Manifesto --- */
+      .manifesto { padding: 3.5rem 1.25rem; }
+      .manifesto__title {
+        font-size: clamp(1.5rem, 6vw, 2rem);
+        margin-bottom: 2.5rem;
+      }
+      .m-para {
+        font-size: 1.125rem;
+        line-height: 1.6;
+      }
+      .m-climax { font-size: 1.125rem; }
+      .m-author { font-size: 1rem; }
+
+      /* --- Context Magic --- */
+      .context-magic { padding: 3.5rem 1.25rem 4rem; }
+      .context-magic__title { font-size: clamp(1.75rem, 7vw, 2.5rem); margin-bottom: 1.5rem; }
+      .context-magic__wrap {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+      .context-magic__right {
+        position: static;
+        height: auto;
+        min-height: auto;
+        order: -1;
+      }
+      .cm-visuals {
+        position: relative;
+        width: 100%;
+        max-width: 100%;
+        aspect-ratio: 1 / 1;
+      }
+      .cm-visual { opacity: 0; }
+      .cm-visual.active { opacity: 1; }
+      .cm-step {
+        min-height: auto;
+        padding-bottom: 2.5rem;
+        max-width: 100%;
+      }
+      .cm-step__title { font-size: clamp(1.25rem, 5vw, 1.75rem); }
+      .cm-step__hook { font-size: 1rem; }
+      .cm-step__body { font-size: 0.9375rem; }
+      .cm-step__tag { font-size: 16px; }
+
+      /* --- Coverflow --- */
+      .coverflow-section { padding: 4rem 1.25rem 5rem; }
+      .coverflow-section__inner { padding: 0; }
+      .coverflow-section__eyebrow { font-size: 15px; }
+      .coverflow-section__title {
+        font-size: clamp(1.5rem, 6vw, 2rem);
+      }
+      .coverflow-section__sub {
+        font-size: 1rem;
+        margin-bottom: 3rem;
+      }
+      .coverflow { margin: 0; }
+      .coverflow__stage {
+        width: 100%;
+        margin-left: 0;
+      }
+      .coverflow-card {
+        flex: 0 0 280px;
+        width: 280px;
+      }
+      .coverflow-card__illus { height: 180px; }
+      .coverflow-card__body { padding: 1rem 1.25rem 1.25rem; }
+      .coverflow-card__time { font-size: 1rem; }
+      .coverflow-card__agent,
+      .coverflow-card__you { font-size: 0.75rem; }
+
+      /* --- Selling Points --- */
+      .selling { padding: 4rem 0; }
+      .selling__head {
+        padding: 0 1.25rem;
+        flex-direction: column;
+        align-items: flex-start;
+        margin-bottom: 3rem;
+      }
+      .sp {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        padding: 2.5rem 1.25rem;
+      }
+      .sp__right { padding-top: 0; }
+
+      /* --- Tabs --- */
+      .tabs-section { padding: 3rem 1.25rem 4rem; }
+      .tabs-nav {
+        gap: 1.25rem;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+      .tabs-nav::-webkit-scrollbar { display: none; }
+      .tabs-nav__btn { font-size: 0.9375rem; white-space: nowrap; }
+
+      /* --- Showcase / Bento --- */
+      .showcase { padding: 4rem 1.25rem; }
+      .showcase__head { margin-bottom: 2rem; }
+      .showcase__title { font-size: clamp(1.5rem, 6vw, 2rem); }
+      .bento {
+        grid-template-columns: repeat(2, 1fr);
+        border-radius: 16px;
+      }
+      .bc {
+        min-height: 180px;
+        padding: 1.25rem;
+      }
+      .bc-icon { width: 3.5rem; height: 3.5rem; }
+      .bc-name { font-size: 15px; }
+      .bc-desc { font-size: 13px; }
+
+      /* --- Compare --- */
+      .compare-section { padding: 4rem 1.25rem 5rem; }
+      .compare__head { margin-bottom: 2.5rem; }
+      .compare__title { font-size: clamp(1.5rem, 6vw, 2rem); }
+      .compare__sub { font-size: 1rem; }
+      .compare__grid { grid-template-columns: 1fr; gap: 1rem; }
+      .compare-card { padding: 1.5rem; border-radius: 20px; }
+      .compare-card__illus { aspect-ratio: 2 / 1; }
+
+      /* --- Convergence --- */
+      .conv-section { height: 400vh; }
+      .conv-sticky { padding: 1rem; }
+      .conv-icons-layer { inset: 24px; }
+      .conv-icon__box {
+        width: 56px;
+        height: 56px;
+        border-radius: 14px;
+        padding: 10px;
+      }
+      .conv-icon__box svg { width: 28px; height: 28px; }
+      .conv-icon__label { font-size: 0.6875rem; }
+      .conv-glow { width: 200px; height: 200px; }
+      .conv-headline { font-size: clamp(1.5rem, 6vw, 2.5rem); }
+      .conv-moxt-text { font-size: clamp(2rem, 10vw, 4rem); }
+      .conv-cta-logo svg { height: 48px; }
+      .conv-cta-moxt { font-size: clamp(1.75rem, 8vw, 3rem); }
+      .conv-cta-sub { font-size: 0.9375rem; max-width: 90%; }
+      .conv-cta-wrap .btn-green {
+        height: 48px;
+        padding: 0 1.5rem;
+        font-size: 0.9375rem;
+      }
+
+      /* --- Footer --- */
+      .footer { padding: 2.5rem 1.25rem 1.5rem; }
+      .footer__top {
+        flex-direction: column;
+        gap: 2rem;
+      }
+      .footer__tagline { font-size: 0.9375rem; max-width: 100%; }
+      .footer__cols { gap: 2rem; }
+      .footer__col a { font-size: 0.9375rem; }
+      .footer__copy { font-size: 0.8125rem; }
+    }
+
+    /* ════════════════════════════════════════════════════
+       EXTRA SMALL — ≤480px
+    ════════════════════════════════════════════════════ */
+    @media (max-width: 480px) {
+      .hero__h1 { font-size: clamp(1.75rem, 9vw, 2.5rem); }
+      .hero__inner { padding: 4rem 1rem 3rem; }
+      .manifesto { padding: 3rem 1rem; }
+      .context-magic { padding: 3rem 1rem 3.5rem; }
+      .coverflow-section { padding: 3rem 1rem 4rem; }
+      .coverflow-card {
+        flex: 0 0 260px;
+        width: 260px;
+      }
+      .bento { grid-template-columns: 1fr; }
+      .bc { min-height: 160px; }
+      .compare-section { padding: 3rem 1rem 4rem; }
+      .showcase { padding: 3rem 1rem; }
+      .tabs-section { padding: 2.5rem 1rem 3rem; }
+      .footer { padding: 2rem 1rem 1rem; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ══════════════════════════════════════════
+       NAV
+  ══════════════════════════════════════════ -->
+  <nav class="nav">
+
+    <!-- Logo SVG 内联 -->
+    <a href="/" class="nav__logo" aria-label="Moxt">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 349.8666 100" fill="none">
+        <defs>
+          <clipPath id="nav-clip-1">
+            <path d="M0 0L236.111 0L236.111 85L0 85L0 0Z" transform="matrix(1 0 0 1 113.756 7.48969)"/>
+          </clipPath>
+        </defs>
+        <g clip-path="url(#nav-clip-1)">
+          <ellipse cx="30.726772" cy="32.684521" rx="30.726772" ry="32.684521" transform="matrix(1 0 0 1 189.479 27.1205)" fill="#212121"/>
+          <ellipse cx="15.69634" cy="16.696428" rx="15.69634" ry="16.696428" transform="matrix(1 0 0 1 204.509 43.1087)" fill="#fff"/>
+          <path d="M65.0685 0L52.7968 0C52.7968 0 51.9406 0.202381 51.7504 0.607143L35.0076 28.131C34.5319 28.9405 33.2953 28.9405 32.8196 28.131L16.3622 0.607143C16.3622 0.607143 15.6963 0 15.2207 0L2.66362 0C1.14155 0 0 1.31548 0 2.83333L0 82.0655C0 83.6845 1.23668 85 2.75875 84.8988L13.6035 84.8988C15.1256 84.7976 16.2671 83.4822 16.2671 81.9643L16.2671 31.4702C16.4574 29.8512 17.5038 31.4702 17.5038 31.4702L31.5829 54.4405C32.6294 56.1607 35.0076 56.1607 36.054 54.4405L50.1332 30.9643C50.1332 30.9643 51.465 28.8393 51.465 30.9643L51.465 81.9643C51.465 83.5834 52.7016 84.7976 54.1286 84.7976L65.0685 84.7976C66.5905 84.7976 67.7321 83.4822 67.7321 81.9643L67.7321 2.83333C67.7321 1.21429 66.4954 0 65.0685 0Z" transform="matrix(1 0 0 1 113.756 7.48969)" fill="#212121"/>
+          <path d="M57.0167 60.6569L39.4178 33.1331C38.847 32.2224 38.847 30.9069 39.4178 29.9962L57.0961 1.72125C58.1425 -0.100178 55.9546 0.0010119 55.9546 0.0010119L56.1448 0.0010119L41.3998 0.0010119C40.5436 0.0010119 39.6874 0.506964 39.1167 1.2153L29.4292 16.2343C28.8584 17.145 27.6217 17.145 27.051 16.2343L17.9186 1.35926C17.4429 0.549741 16.5868 0.0437889 15.6355 0.0437889L1.46119 0.0437889C1.46119 0.0437889 -0.821917 0.0437888 0.319634 1.86522L18.1088 30.0974C18.6796 31.0081 18.6796 32.3235 18.1088 33.2343L0.224503 60.8593C-0.251146 62.0735 0.319634 62.3771 0.60502 62.4783L16.5868 62.4783C17.5381 62.4783 18.4893 61.9723 18.965 61.0616L28.0023 45.5795C28.5731 44.6688 29.8097 44.6688 30.3805 45.5795L39.5129 61.0616C39.9886 61.9723 40.9399 62.4783 41.8912 62.4783L56.446 62.4783C56.446 62.4783 57.3973 62.0735 56.8265 60.6569L57.0167 60.6569Z" transform="matrix(1 0 0 1 250.708 30.1122)" fill="#212121"/>
+          <path d="M34.2466 16.7976L23.7824 16.7976L23.7824 2.83333C23.7824 1.21429 22.5457 0 21.1187 0L11.035 0C9.51295 0 8.37139 1.31548 8.37139 2.83333L8.37139 16.8988L2.5685 16.8988C1.14156 16.8988 0 18.1131 0 19.631L0 27.625C0 29.1429 1.14156 30.3571 2.5685 30.3571L8.46652 30.3571L8.46652 64.9643C8.46652 72.8571 14.5548 79.3333 21.9749 79.3333L34.1515 79.3333C35.6735 79.3333 36.8151 78.0178 36.8151 76.5L36.8151 67.6964C36.8151 65.0655 35.3881 64.5595 34.6271 64.5595L29.8706 64.5595C29.8706 64.5595 23.5921 64.5595 23.7824 58.3869L23.7824 30.3571L34.2466 30.3571C35.6735 30.3571 36.8151 29.1429 36.8151 27.625L36.8151 19.631C36.8151 18.1131 35.6735 16.8988 34.2466 16.8988L34.2466 16.7976Z" transform="matrix(1 0 0 1 313.052 13.2576)" fill="#212121"/>
+        </g>
+        <defs>
+          <clipPath id="nav-clip-2">
+            <path d="M0 0L89.2799 0L89.2799 100L0 100L0 0Z" transform="matrix(1 0 0 1 0 0)"/>
+          </clipPath>
+        </defs>
+        <g clip-path="url(#nav-clip-2)">
+          <path d="M5.45065 78.7379C2.07612 76.7705 0 73.1587 0 69.2536L0 50.2785L0.00659087 50.2752L0 50.2719L0 30.664C0 26.7622 2.07118 23.1537 5.44076 21.1847L39.1465 1.49778C42.5671 -0.499259 46.7985 -0.499259 50.2191 1.49778L83.8392 21.1336C87.2088 23.101 89.2799 26.7112 89.2799 30.613L89.2799 69.5288C89.2799 73.4322 87.2071 77.0424 83.8359 79.0098L50.4383 98.5039C47.0209 100.498 42.7962 100.499 39.3772 98.5089L5.449 78.7395L5.45065 78.7379Z" transform="matrix(1 0 0 1 0 0)" fill="#29C16A"/>
+          <path d="M2.51422e-06 18.0693L2.51422e-06 45.7477C2.51422e-06 47.1993 0.771135 48.5422 2.0234 49.2738L25.9005 63.2217C27.1659 63.9615 28.7329 63.9648 30.0017 63.2316L53.8441 49.4583C55.1063 48.7284 55.8857 47.3806 55.8857 45.9223L55.8857 17.9638C55.8857 16.5122 55.1145 15.1693 53.8606 14.4377L30.0857 0.557341C28.8137 -0.185781 27.2401 -0.185781 25.968 0.557341L2.02176 14.5432C0.767847 15.2748 -0.00163676 16.6176 2.51422e-06 18.0693Z" transform="matrix(1 0 0 1 16.6963 18.1113)" fill="#fff"/>
+          <path d="M0 0L0.00823658 25.8758L22.5507 38.8104L22.5507 12.9L0 0Z" transform="matrix(1 0 0 1 22.2145 36.8347)" fill="#29C16A"/>
+        </g>
+      </svg>
+    </a>
+
+    <!-- 居中链接组，pill 风格 -->
+    <ul class="nav__links">
+      <li><a href="whats-new.html">What's New</a></li>
+      <li><a href="pricing.html">Pricing</a></li>
+    </ul>
+
+    <!-- 右侧 CTA -->
+    <div class="nav__right">
+      <a href="#" class="btn btn-green">Get Started Free</a>
+    </div>
+
+  </nav>
+
+
+  <!-- ══════════════════════════════════════════
+       HERO  ·  白色
+  ══════════════════════════════════════════ -->
+  <section class="hero" id="home">
+    <div class="hero__inner">
+
+      <!-- 左栏：文字 -->
+      <div class="hero__left">
+
+        <h1 class="hero__h1" aria-label="Where your agents live and work.">
+          <span class="h1-line"><span class="h1-line-inner">Where your <em>agents</em></span></span>
+          <span class="h1-line"><span class="h1-line-inner">live <em>and work.</em></span></span>
+        </h1>
+
+        <div class="hero__foot">
+          <p class="hero__sub">
+            Your AI Agents run 24/7 — researching, building, shipping.<br>
+            You set the direction. They handle everything else.
+          </p>
+          <div class="hero__actions">
+            <a href="#" class="btn btn-green btn-lg">
+              Get Started Free
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true">
+                <path d="M2 11L11 2M11 2H4.5M11 2v6.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+
+      </div><!-- /hero__left -->
+
+      <!-- 右栏：配图 -->
+      <div class="hero__right">
+        <img
+          src="hero-illustration.svg"
+          alt="AI Teammates illustration"
+          class="hero__illus"
+          draggable="false"
+        />
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════
+       MANIFESTO  ·  灰色
+  ══════════════════════════════════════════ -->
+  <section class="manifesto" id="manifesto">
+    <div class="manifesto__inner">
+      <h2 class="manifesto__title">Manifesto</h2>
+      <p class="m-para" data-mlit>
+        Every company will soon have more agents than employees.
+        100x more. Maybe 1,000x.
+      </p>
+      <p class="m-para" data-mlit>
+        These agents won't use your software through buttons and menus.
+        They'll call APIs, write code, read files, and talk to each
+        other — directly.
+      </p>
+      <p class="m-para" data-mlit>
+        They need a place to live. A file system. Memory.
+        Context. Tools. Identity.
+      </p>
+
+      <p class="m-climax" data-mclimax>Moxt is that place.</p>
+      <span class="m-author" data-mauthor>— Written by Moxt</span>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════
+       CONTEXT IN. MAGIC OUT. — 侧边粘性滚动
+  ══════════════════════════════════════════ -->
+  <section class="context-magic" id="context-magic">
+    <div class="context-magic__inner">
+      <h2 class="context-magic__title">Context in.<br>Magic out.</h2>
+
+      <div class="context-magic__wrap">
+        <div class="context-magic__left">
+          <article class="cm-step" data-cm-step="1">
+            <h3 class="cm-step__title">The operating system for your agents.</h3>
+            <p class="cm-step__hook">Files. Memory. Skills. Tools. Everything an agent needs to do real work.</p>
+            <p class="cm-step__body">Your agents need more than a prompt box. Moxt gives each one a persistent workspace — files, long-term memory, callable skills, and direct access to your tools. No hand-holding. No re-explaining. They just work.</p>
+            <span class="cm-step__tag">Not a chatbot. A full working environment.</span>
+          </article>
+          <article class="cm-step" data-cm-step="2">
+            <h3 class="cm-step__title">They stay. They learn. They compound.</h3>
+            <p class="cm-step__hook">Shared memory across your whole team — human and AI.</p>
+            <p class="cm-step__body">Correct one agent's mistake, and every agent on your team learns from it. Playbooks, preferences, lessons — absorbed once, applied everywhere.</p>
+            <span class="cm-step__tag">One team brain. Always learning. Never forgetting.</span>
+          </article>
+          <article class="cm-step" data-cm-step="3">
+            <h3 class="cm-step__title">Your team × 100.</h3>
+            <p class="cm-step__hook">Every person backed by agents that share context and act as one.</p>
+            <p class="cm-step__body">Your agents share context, follow the same rules, and coordinate across functions. One pulls the data, another drafts the report, a third builds the deck — all in the same workspace. A 5-person team ships like 50.</p>
+            <span class="cm-step__tag">Scale with agents, not headcount.</span>
+          </article>
+        </div>
+
+        <div class="context-magic__right">
+          <div class="cm-visuals">
+          <div class="cm-visual active" data-cm-visual="1">
+            <div class="cm-visual__img">
+              <svg class="cm-illus" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <rect x="80" y="60" width="240" height="280" rx="12" stroke="#212121" stroke-width="1.5" fill="#F8F8F6"/>
+                <rect x="100" y="90" width="200" height="24" rx="4" fill="#E5E3DF"/>
+                <rect x="100" y="128" width="160" height="18" rx="3" fill="#E8E6E2"/>
+                <rect x="100" y="156" width="180" height="18" rx="3" fill="#E8E6E2"/>
+                <circle cx="320" cy="100" r="20" stroke="#29C16A" stroke-width="1.5" fill="none"/>
+                <path d="M308 100l8 8 16-16" stroke="#29C16A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                <rect x="100" y="200" width="80" height="56" rx="8" stroke="#3A3A38" stroke-width="1.2" fill="none"/>
+                <path d="M120 228v-12h20v12M130 216v-8" stroke="#3A3A38" stroke-width="1" stroke-linecap="round"/>
+                <rect x="200" y="200" width="80" height="56" rx="8" stroke="#3A3A38" stroke-width="1.2" fill="none"/>
+                <circle cx="240" cy="228" r="8" stroke="#3A3A38" stroke-width="1.2" fill="none"/>
+                <rect x="300" y="200" width="80" height="56" rx="8" stroke="#3A3A38" stroke-width="1.2" fill="none"/>
+                <path d="M320 224l6 6 12-12" stroke="#29C16A" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                <text x="120" y="280" font-family="Inter, sans-serif" font-size="11" font-weight="500" fill="#8A8A85">Files</text>
+                <text x="220" y="280" font-family="Inter, sans-serif" font-size="11" font-weight="500" fill="#8A8A85">Memory</text>
+                <text x="308" y="280" font-family="Inter, sans-serif" font-size="11" font-weight="500" fill="#8A8A85">Tools</text>
+              </svg>
+            </div>
+          </div>
+          <div class="cm-visual" data-cm-visual="2">
+            <div class="cm-visual__img">
+              <svg class="cm-illus" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <circle cx="200" cy="200" r="70" stroke="#212121" stroke-width="1.5" fill="#F8F8F6"/>
+                <circle cx="200" cy="200" r="42" stroke="#29C16A" stroke-width="1.5" fill="rgba(41,193,106,0.08)"/>
+                <circle cx="200" cy="158" r="14" fill="#29C16A"/>
+                <circle cx="242" cy="218" r="14" fill="#212121"/>
+                <circle cx="158" cy="218" r="14" fill="#212121"/>
+                <circle cx="200" cy="278" r="14" fill="#212121"/>
+                <circle cx="128" cy="170" r="12" stroke="#3A3A38" stroke-width="1.2" fill="#F3F3F0"/>
+                <circle cx="272" cy="170" r="12" stroke="#3A3A38" stroke-width="1.2" fill="#F3F3F0"/>
+                <circle cx="128" cy="230" r="12" stroke="#3A3A38" stroke-width="1.2" fill="#F3F3F0"/>
+                <circle cx="272" cy="230" r="12" stroke="#3A3A38" stroke-width="1.2" fill="#F3F3F0"/>
+                <path d="M186 172l14-14M214 172l-14-14M186 228l14 14M214 228l-14 14" stroke="#C8C8C3" stroke-width="1" stroke-dasharray="4 3"/>
+                <path d="M200 144v20M200 236v20M156 200h20M244 200h20" stroke="#29C16A" stroke-width="1.2" stroke-linecap="round" opacity="0.8"/>
+              </svg>
+            </div>
+          </div>
+          <div class="cm-visual" data-cm-visual="3">
+            <div class="cm-visual__img">
+              <svg class="cm-illus" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <g opacity="0.5">
+                  <circle cx="100" cy="140" r="18" stroke="#3A3A38" stroke-width="1.2" fill="#F8F8F6"/>
+                  <circle cx="160" cy="140" r="18" stroke="#3A3A38" stroke-width="1.2" fill="#F8F8F6"/>
+                  <circle cx="100" cy="200" r="18" stroke="#3A3A38" stroke-width="1.2" fill="#F8F8F6"/>
+                  <circle cx="160" cy="200" r="18" stroke="#3A3A38" stroke-width="1.2" fill="#F8F8F6"/>
+                  <circle cx="130" cy="170" r="18" stroke="#3A3A38" stroke-width="1.2" fill="#F8F8F6"/>
+                </g>
+                <path d="M178 170h44" stroke="#29C16A" stroke-width="2" stroke-linecap="round"/>
+                <path d="M200 158v24" stroke="#29C16A" stroke-width="2" stroke-linecap="round"/>
+                <polygon points="248,170 238,164 238,176" fill="#29C16A"/>
+                <g>
+                  <circle cx="300" cy="120" r="14" stroke="#212121" stroke-width="1.2" fill="#F8F8F6"/>
+                  <circle cx="340" cy="120" r="14" stroke="#212121" stroke-width="1.2" fill="#F8F8F6"/>
+                  <circle cx="380" cy="120" r="14" stroke="#212121" stroke-width="1.2" fill="#F8F8F6"/>
+                  <circle cx="280" cy="155" r="14" stroke="#212121" stroke-width="1.2" fill="#F8F8F6"/>
+                  <circle cx="320" cy="155" r="14" stroke="#29C16A" stroke-width="1.2" fill="rgba(41,193,106,0.12)"/>
+                  <circle cx="360" cy="155" r="14" stroke="#212121" stroke-width="1.2" fill="#F8F8F6"/>
+                  <circle cx="300" cy="190" r="14" stroke="#212121" stroke-width="1.2" fill="#F8F8F6"/>
+                  <circle cx="340" cy="190" r="14" stroke="#212121" stroke-width="1.2" fill="#F8F8F6"/>
+                  <circle cx="380" cy="190" r="14" stroke="#212121" stroke-width="1.2" fill="#F8F8F6"/>
+                  <circle cx="260" cy="225" r="14" stroke="#212121" stroke-width="1.2" fill="#F8F8F6"/>
+                  <circle cx="300" cy="225" r="14" stroke="#212121" stroke-width="1.2" fill="#F8F8F6"/>
+                  <circle cx="340" cy="225" r="14" stroke="#212121" stroke-width="1.2" fill="#F8F8F6"/>
+                  <circle cx="380" cy="225" r="14" stroke="#212121" stroke-width="1.2" fill="#F8F8F6"/>
+                  <circle cx="320" cy="260" r="14" stroke="#212121" stroke-width="1.2" fill="#F8F8F6"/>
+                  <circle cx="360" cy="260" r="14" stroke="#212121" stroke-width="1.2" fill="#F8F8F6"/>
+                </g>
+                <text x="200" y="310" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#212121">5</text>
+                <text x="200" y="328" font-family="Inter, sans-serif" font-size="11" fill="#8A8A85">people</text>
+                <text x="318" y="318" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#29C16A">× 50</text>
+                <text x="318" y="336" font-family="Inter, sans-serif" font-size="11" fill="#8A8A85">output</text>
+              </svg>
+            </div>
+          </div>
+          </div><!-- /cm-visuals -->
+        </div><!-- /context-magic__right -->
+      </div><!-- /context-magic__wrap -->
+    </div><!-- /context-magic__inner -->
+  </section>
+
+
+  <!-- ══════════════════════════════════════════
+       COVER FLOW — 3D 旋转木马
+  ══════════════════════════════════════════ -->
+  <section class="coverflow-section" id="coverflow">
+    <div class="coverflow-section__inner">
+      <p class="coverflow-section__eyebrow">Always on. Always working.</p>
+      <h2 class="coverflow-section__title">Your AI Teammates<br>don't wait to be asked.</h2>
+      <p class="coverflow-section__sub">From sunrise to midnight — and back again. They never stop.</p>
+      <div class="coverflow coverflow--drag">
+        <div class="coverflow__stage">
+          <div class="coverflow__track">
+          <article class="coverflow-card" data-cf-index="0"><div class="coverflow-card__inner"><div class="coverflow-card__illus" style="background:#B8E6D5"></div><div class="coverflow-card__body"><p class="coverflow-card__time"><span class="coverflow-card__dot"></span>7:00 AM - Morning ops briefing</p><p class="coverflow-card__agent"><strong>AGENT:</strong> Scanned overnight metrics. Flagged 2 anomalies. Drafted exec brief with actions.</p><p class="coverflow-card__you"><strong>YOU:</strong> Still having coffee. The brief is already in your inbox.</p></div></div></article>
+          <article class="coverflow-card" data-cf-index="1"><div class="coverflow-card__inner"><div class="coverflow-card__illus" style="background:#FFE5B4"></div><div class="coverflow-card__body"><p class="coverflow-card__time"><span class="coverflow-card__dot"></span>9:30 AM - Product launch prep</p><p class="coverflow-card__agent"><strong>AGENT:</strong> Built pricing page, wrote email sequences, generated social assets, compiled press kit.</p><p class="coverflow-card__you"><strong>YOU:</strong> Review and approve. One round of feedback, done.</p></div></div></article>
+          <article class="coverflow-card" data-cf-index="2"><div class="coverflow-card__inner"><div class="coverflow-card__illus" style="background:#E8D5F2"></div><div class="coverflow-card__body"><p class="coverflow-card__time"><span class="coverflow-card__dot"></span>11:00 AM - New client onboarding</p><p class="coverflow-card__agent"><strong>AGENT:</strong> Deal closed → auto-triggered: onboarding checklist, welcome deck, project tracker, kick-off agenda.</p><p class="coverflow-card__you"><strong>YOU:</strong> Client gets a polished Day 1 experience. You didn't touch it.</p></div></div></article>
+          <article class="coverflow-card" data-cf-index="3"><div class="coverflow-card__inner"><div class="coverflow-card__illus" style="background:#FFD4D4"></div><div class="coverflow-card__body"><p class="coverflow-card__time"><span class="coverflow-card__dot"></span>2:00 PM - Growth diagnosis</p><p class="coverflow-card__agent"><strong>AGENT:</strong> MRR flat → ran funnel analysis, pulled competitor intel, built retention dashboard, drafted 3 experiments.</p><p class="coverflow-card__you"><strong>YOU:</strong> Walk into the growth meeting with a full plan ready.</p></div></div></article>
+          <article class="coverflow-card" data-cf-index="4"><div class="coverflow-card__inner"><div class="coverflow-card__illus" style="background:#FFF4B8"></div><div class="coverflow-card__body"><p class="coverflow-card__time"><span class="coverflow-card__dot"></span>5:00 PM - Board deck assembly</p><p class="coverflow-card__agent"><strong>AGENT:</strong> Pulled live data from finance, product, sales. Assembled board deck + CEO talking points.</p><p class="coverflow-card__you"><strong>YOU:</strong> Board prep: 2 hours of review instead of 2 weeks.</p></div></div></article>
+          <article class="coverflow-card" data-cf-index="5"><div class="coverflow-card__inner"><div class="coverflow-card__illus" style="background:#E8D5F2"></div><div class="coverflow-card__body"><p class="coverflow-card__time"><span class="coverflow-card__dot"></span>2:00 AM - Competitive intel refresh</p><p class="coverflow-card__agent"><strong>AGENT:</strong> Scans competitor pages, pricing changes, job postings, press mentions. Updates the living brief.</p><p class="coverflow-card__you"><strong>YOU:</strong> You're asleep. Tomorrow the market landscape is already current.</p></div></div></article>
+          <article class="coverflow-card coverflow-card--cycle" data-cf-index="6"><div class="coverflow-card__inner"><div class="coverflow-card__illus coverflow-card__illus--gray"><span class="coverflow-card__cycle-arrow">→</span><span class="coverflow-card__cycle-time">7:00 AM</span><p class="coverflow-card__cycle">The cycle continues</p></div></div></article>
+          <article class="coverflow-card" data-cf-index="7"><div class="coverflow-card__inner"><div class="coverflow-card__illus" style="background:#F5E6F0"></div><div class="coverflow-card__body"><p class="coverflow-card__time"><span class="coverflow-card__dot"></span>9:00 PM - Investor update</p><p class="coverflow-card__agent"><strong>AGENT:</strong> Pulled portfolio data, built dashboard, drafted LP letter, formatted PDF. Ready to send.</p><p class="coverflow-card__you"><strong>YOU:</strong> You're at dinner. The quarterly update wrote itself.</p></div></div></article>
+          <article class="coverflow-card" data-cf-index="8"><div class="coverflow-card__inner"><div class="coverflow-card__illus" style="background:#B8E6D5"></div><div class="coverflow-card__body"><p class="coverflow-card__time"><span class="coverflow-card__dot"></span>7:00 AM - Morning ops briefing</p><p class="coverflow-card__agent"><strong>AGENT:</strong> Scanned overnight metrics. Flagged 2 anomalies. Drafted exec brief with actions.</p><p class="coverflow-card__you"><strong>YOU:</strong> Still having coffee. The brief is already in your inbox.</p></div></div></article>
+          <article class="coverflow-card" data-cf-index="9"><div class="coverflow-card__inner"><div class="coverflow-card__illus" style="background:#FFE5B4"></div><div class="coverflow-card__body"><p class="coverflow-card__time"><span class="coverflow-card__dot"></span>9:30 AM - Product launch prep</p><p class="coverflow-card__agent"><strong>AGENT:</strong> Built pricing page, wrote email sequences, generated social assets, compiled press kit.</p><p class="coverflow-card__you"><strong>YOU:</strong> Review and approve. One round of feedback, done.</p></div></div></article>
+          <article class="coverflow-card" data-cf-index="10"><div class="coverflow-card__inner"><div class="coverflow-card__illus" style="background:#E8D5F2"></div><div class="coverflow-card__body"><p class="coverflow-card__time"><span class="coverflow-card__dot"></span>11:00 AM - New client onboarding</p><p class="coverflow-card__agent"><strong>AGENT:</strong> Deal closed → auto-triggered: onboarding checklist, welcome deck, project tracker, kick-off agenda.</p><p class="coverflow-card__you"><strong>YOU:</strong> Client gets a polished Day 1 experience. You didn't touch it.</p></div></div></article>
+          <article class="coverflow-card" data-cf-index="11"><div class="coverflow-card__inner"><div class="coverflow-card__illus" style="background:#FFD4D4"></div><div class="coverflow-card__body"><p class="coverflow-card__time"><span class="coverflow-card__dot"></span>2:00 PM - Growth diagnosis</p><p class="coverflow-card__agent"><strong>AGENT:</strong> MRR flat → ran funnel analysis, pulled competitor intel, built retention dashboard, drafted 3 experiments.</p><p class="coverflow-card__you"><strong>YOU:</strong> Walk into the growth meeting with a full plan ready.</p></div></div></article>
+          <article class="coverflow-card" data-cf-index="12"><div class="coverflow-card__inner"><div class="coverflow-card__illus" style="background:#FFF4B8"></div><div class="coverflow-card__body"><p class="coverflow-card__time"><span class="coverflow-card__dot"></span>5:00 PM - Board deck assembly</p><p class="coverflow-card__agent"><strong>AGENT:</strong> Pulled live data from finance, product, sales. Assembled board deck + CEO talking points.</p><p class="coverflow-card__you"><strong>YOU:</strong> Board prep: 2 hours of review instead of 2 weeks.</p></div></div></article>
+          <article class="coverflow-card" data-cf-index="13"><div class="coverflow-card__inner"><div class="coverflow-card__illus" style="background:#E8D5F2"></div><div class="coverflow-card__body"><p class="coverflow-card__time"><span class="coverflow-card__dot"></span>2:00 AM - Competitive intel refresh</p><p class="coverflow-card__agent"><strong>AGENT:</strong> Scans competitor pages, pricing changes, job postings, press mentions. Updates the living brief.</p><p class="coverflow-card__you"><strong>YOU:</strong> You're asleep. Tomorrow the market landscape is already current.</p></div></div></article>
+          <article class="coverflow-card coverflow-card--cycle" data-cf-index="14"><div class="coverflow-card__inner"><div class="coverflow-card__illus coverflow-card__illus--gray"><span class="coverflow-card__cycle-arrow">→</span><span class="coverflow-card__cycle-time">7:00 AM</span><p class="coverflow-card__cycle">The cycle continues</p></div></div></article>
+          <article class="coverflow-card" data-cf-index="15"><div class="coverflow-card__inner"><div class="coverflow-card__illus" style="background:#F5E6F0"></div><div class="coverflow-card__body"><p class="coverflow-card__time"><span class="coverflow-card__dot"></span>9:00 PM - Investor update</p><p class="coverflow-card__agent"><strong>AGENT:</strong> Pulled portfolio data, built dashboard, drafted LP letter, formatted PDF. Ready to send.</p><p class="coverflow-card__you"><strong>YOU:</strong> You're at dinner. The quarterly update wrote itself.</p></div></div></article>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════
+       BUILT BY AI TEAMMATES — 灰色背景，独立展示
+  ══════════════════════════════════════════ -->
+  <section class="showcase showcase--gray" id="built-by-teammates">
+    <div class="showcase__inner">
+      <div class="showcase__head">
+        <p class="eyebrow showcase__eyebrow">See what's possible</p>
+        <h2 class="showcase__title">Built by AI Teammates.<br>Explore for yourself.</h2>
+        <p class="showcase__sub">
+          Real workspaces, real output. Take a look — then let your
+          AI Teammates build one for you.
+        </p>
+      </div>
+      <div class="bento">
+        <div class="bc">
+          <div class="bc-top">
+            <svg class="bc-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M24 6l-8 10h6v14h4V16h6L24 6z"/><path d="M18 30l-4 8M30 30l4 8"/><path d="M24 38v4"/><path d="M20 42h8" stroke="#18EA7C"/><ellipse cx="24" cy="22" rx="3" ry="2" fill="#18EA7C" opacity="0.5"/></svg>
+            <svg class="bc-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M13 3H6M13 3v7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div><p class="bc-name">AI Startup</p><p class="bc-desc">Product roadmap, competitive landscape, fundraising tracker, pitch deck</p></div>
+        </div>
+        <div class="bc">
+          <div class="bc-top">
+            <svg class="bc-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="14" y="18" width="20" height="14" rx="2"/><circle cx="24" cy="25" r="4"/><path d="M24 21V18M24 32v2"/><path d="M20 25h-2M34 25h2"/><path d="M24 14v-2"/><path d="M24 8l2 4h-4l2-4z" stroke="#18EA7C"/></svg>
+            <svg class="bc-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M13 3H6M13 3v7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div><p class="bc-name">Media Agency</p><p class="bc-desc">Campaign briefs, content calendar, performance dashboard, editorial workflow</p></div>
+        </div>
+        <div class="bc">
+          <div class="bc-top">
+            <svg class="bc-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 38V22h6v16M22 38V14h6v24M34 38V18h6v20"/><path d="M8 20h32" stroke="#18EA7C"/><path d="M8 12h32" stroke="#18EA7C" opacity="0.7"/><path d="M24 6v4" stroke="#18EA7C"/></svg>
+            <svg class="bc-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M13 3H6M13 3v7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div><p class="bc-name">Marketing Consultancy</p><p class="bc-desc">Client proposals, market sizing, deliverable decks, engagement tracker</p></div>
+        </div>
+        <div class="bc">
+          <div class="bc-top">
+            <svg class="bc-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="10" y="20" width="28" height="18" rx="2"/><path d="M16 20V14a8 8 0 0116 0v6"/><path d="M20 28h8"/><circle cx="24" cy="29" r="2" fill="#18EA7C" opacity="0.5"/></svg>
+            <svg class="bc-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M13 3H6M13 3v7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div><p class="bc-name">Investment Firm</p><p class="bc-desc">Deal pipeline, due diligence, portfolio dashboard, LP reporting</p></div>
+        </div>
+        <div class="bc">
+          <div class="bc-top">
+            <svg class="bc-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M24 6v36M12 12l12-8 12 8M12 36l12 8 12-8"/><circle cx="24" cy="24" r="5"/><path d="M19 24h10" stroke="#18EA7C"/></svg>
+            <svg class="bc-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M13 3H6M13 3v7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div><p class="bc-name">Law Practice</p><p class="bc-desc">Legal memos, case law tracker, client intake, matter timeline</p></div>
+        </div>
+        <div class="bc">
+          <div class="bc-top">
+            <svg class="bc-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 18h24v22H12z"/><path d="M18 18V12a6 6 0 0112 0v6"/><path d="M20 26h8M20 32h6"/><path d="M24 10l-6 3v2h12v-2l-6-3z" stroke="#18EA7C"/><path d="M24 14v-2" stroke="#18EA7C"/></svg>
+            <svg class="bc-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M13 3H6M13 3v7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div><p class="bc-name">Medical Practice</p><p class="bc-desc">Research digests, patient summaries, clinical protocol tracker</p></div>
+        </div>
+        <div class="bc">
+          <div class="bc-top">
+            <svg class="bc-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 32h24v8H12z"/><path d="M18 32V24a6 6 0 0112 0v8"/><path d="M24 20l-10 5 10 5 10-5-10-5z"/><path d="M24 16v-2"/><path d="M24 12l-4 2v2h8v-2l-4-2z" stroke="#18EA7C"/></svg>
+            <svg class="bc-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M13 3H6M13 3v7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div><p class="bc-name">Student / Researcher</p><p class="bc-desc">Literature notes, research tracker, thesis outline, study planner</p></div>
+        </div>
+        <div class="bc">
+          <div class="bc-top">
+            <svg class="bc-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="24" cy="16" rx="10" ry="7"/><path d="M24 23v18M14 41h20"/><path d="M18 28h12"/><path d="M24 23c5 0 9 2 9 5" stroke="#18EA7C"/><path d="M36 16c0 3-4 5-9 5s-9-2-9-5" stroke="#18EA7C" opacity="0.6"/></svg>
+            <svg class="bc-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M13 3H6M13 3v7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div><p class="bc-name">Podcast Studio</p><p class="bc-desc">Show notes, episode tracker, promo pages, guest research</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════
+       COMPARE — Not better. Just different.
+  ══════════════════════════════════════════ -->
+  <section class="compare-section" id="compare">
+    <div class="compare__inner">
+      <div class="compare__head">
+        <h2 class="compare__title">Not better. Just different.</h2>
+        <p class="compare__sub">You know the best. Now meet what's next.</p>
+      </div>
+      <div class="compare__grid">
+        <article class="compare-card">
+          <div class="compare-card__content">
+            <h3 class="compare-card__title">OpenClaw</h3>
+            <p class="compare-card__desc">A powerful personal agent with its own persistent environment. The future of individual productivity.</p>
+            <div class="compare-card__illus">📋</div>
+            <p class="compare-card__limit">Built for one person. Your agents can't collaborate, share context, or work as a team.</p>
+            <p class="compare-card__moxt">Moxt is OpenClaw for your whole organization — agents that share context, coordinate, and compound together.</p>
+          </div>
+          <div class="compare-card__hover">
+            <h3 class="compare-card__hover-title">Direct access.</h3>
+            <p class="compare-card__hover-text">These agents won't use your software through buttons and menus. They'll call APIs, write code, read files, and talk to each other — directly.</p>
+          </div>
+        </article>
+        <article class="compare-card">
+          <div class="compare-card__content">
+            <h3 class="compare-card__title">ChatGPT / Manus</h3>
+            <p class="compare-card__desc">Ask a question, get an answer. Kick off a task, get a result. Incredibly capable, and getting better fast.</p>
+            <div class="compare-card__illus">💬</div>
+            <p class="compare-card__limit">Every conversation starts from zero. No persistent memory. No workspace. No compounding.</p>
+            <p class="compare-card__moxt">Your agents don't start over every time. They live in a workspace with your data, your rules, and months of accumulated context.</p>
+          </div>
+          <div class="compare-card__hover">
+            <h3 class="compare-card__hover-title">Direct access.</h3>
+            <p class="compare-card__hover-text">These agents won't use your software through buttons and menus. They'll call APIs, write code, read files, and talk to each other — directly.</p>
+          </div>
+        </article>
+        <article class="compare-card">
+          <div class="compare-card__content">
+            <h3 class="compare-card__title">Notion</h3>
+            <p class="compare-card__desc">Beautiful docs. Rich collaboration. The workspace that defined how modern teams organize knowledge.</p>
+            <div class="compare-card__illus">📄</div>
+            <p class="compare-card__limit">Designed for humans to read and write. AI is bolted on, not native. Your agents can't truly live here.</p>
+            <p class="compare-card__moxt">Moxt is a workspace designed for agents first — where AI reads, writes, acts, and learns natively.</p>
+          </div>
+          <div class="compare-card__hover">
+            <h3 class="compare-card__hover-title">Direct access.</h3>
+            <p class="compare-card__hover-text">These agents won't use your software through buttons and menus. They'll call APIs, write code, read files, and talk to each other — directly.</p>
+          </div>
+        </article>
+        <article class="compare-card">
+          <div class="compare-card__content">
+            <h3 class="compare-card__title">Cursor / Claude Code</h3>
+            <p class="compare-card__desc">The most powerful AI coding environments available. If you're an engineer, these are essential.</p>
+            <div class="compare-card__illus">⚡</div>
+            <p class="compare-card__limit">Built for code. Not for the other 90% of your team's work — strategy, ops, marketing, finance, client management.</p>
+            <p class="compare-card__moxt">Moxt brings the same agentic power to every function, not just engineering.</p>
+          </div>
+          <div class="compare-card__hover">
+            <h3 class="compare-card__hover-title">Direct access.</h3>
+            <p class="compare-card__hover-text">These agents won't use your software through buttons and menus. They'll call APIs, write code, read files, and talk to each other — directly.</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════
+       CONVERGENCE — Scroll-Driven Brand Animation
+  ══════════════════════════════════════════ -->
+  <section class="conv-section" id="convergence">
+    <div class="conv-sticky">
+
+      <!-- 11 context source icons (circular style, no Figma) -->
+      <div class="conv-icons-layer">
+        <!-- Google Docs 产品 icon：蓝底白 doc -->
+        <div class="conv-icon"><div class="conv-icon__box"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z" fill="#4285F4"/><path d="M14 2v6h6" fill="#A8C7FA"/><path d="M16 12H8M16 16H8M12 8H8" stroke="#fff" stroke-width="1.2" stroke-linecap="round" fill="none"/></svg></div><span class="conv-icon__label">Google Docs</span></div>
+        <!-- Notion 产品 icon：黑 N -->
+        <div class="conv-icon"><div class="conv-icon__box"><svg viewBox="0 0 24 24" fill="#000" xmlns="http://www.w3.org/2000/svg"><path d="M4.5 3A1.5 1.5 0 003 4.5v15A1.5 1.5 0 004.5 21h15a1.5 1.5 0 001.5-1.5v-15A1.5 1.5 0 0019.5 3H4.5zM8 6.5l3 3 2-4 3 7.5v5H8v-5l2-3-2-4V6.5z"/></svg></div><span class="conv-icon__label">Notion</span></div>
+        <!-- Slack 产品 icon：四色块 -->
+        <div class="conv-icon"><div class="conv-icon__box"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M6 2a2 2 0 012 2v2H4a2 2 0 012-2z" fill="#E01E5A"/><path d="M20 6a2 2 0 012 2v2h-4V8a2 2 0 012-2z" fill="#36C5F0"/><path d="M18 20a2 2 0 002-2v-2h-4v2a2 2 0 002 2z" fill="#2EB67D"/><path d="M4 18a2 2 0 01-2-2v-2h4v2a2 2 0 01-2 2z" fill="#ECB22E"/></svg></div><span class="conv-icon__label">Slack</span></div>
+        <!-- Spreadsheets 产品 icon：绿色表格 -->
+        <div class="conv-icon"><div class="conv-icon__box"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 4h16a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2z" fill="#0F9D58"/><path d="M4 10h8v2H4v-2zm0 4h8v2H4v-2zm10-4h6v2h-6v-2zm0 4h6v2h-6v-2z" fill="rgba(255,255,255,0.9)"/></svg></div><span class="conv-icon__label">Spreadsheets</span></div>
+        <!-- Local Files 产品 icon：文件夹 -->
+        <div class="conv-icon"><div class="conv-icon__box"><svg viewBox="0 0 24 24" fill="none" stroke="#5F6368" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/><path d="M2 10h20"/></svg></div><span class="conv-icon__label">Local Files</span></div>
+        <!-- GitHub 产品 icon：Octocat 风格 -->
+        <div class="conv-icon"><div class="conv-icon__box"><svg viewBox="0 0 24 24" fill="#24292f" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0012 2z"/></svg></div><span class="conv-icon__label">GitHub</span></div>
+        <!-- Emails 产品 icon：信封 -->
+        <div class="conv-icon"><div class="conv-icon__box"><svg viewBox="0 0 24 24" fill="none" stroke="#EA4335" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="M22 6L12 13 2 6"/></svg></div><span class="conv-icon__label">Emails</span></div>
+        <!-- Web Articles 产品 icon：地球 -->
+        <div class="conv-icon"><div class="conv-icon__box"><svg viewBox="0 0 24 24" fill="none" stroke="#34A853" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg></div><span class="conv-icon__label">Web Articles</span></div>
+        <!-- Your Head 产品 icon：人头轮廓 -->
+        <div class="conv-icon"><div class="conv-icon__box"><svg viewBox="0 0 24 24" fill="none" stroke="#212121" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="8" r="4"/><path d="M5 20c0-4 3-7 7-7s7 3 7 7"/></svg></div><span class="conv-icon__label">Your Head</span></div>
+        <!-- Meeting Notes 产品 icon：麦克风/会议 -->
+        <div class="conv-icon"><div class="conv-icon__box"><svg viewBox="0 0 24 24" fill="none" stroke="#FBBC04" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M12 2a3 3 0 013 3v6a3 3 0 01-6 0V5a3 3 0 013-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><path d="M12 18v4"/><path d="M9 22h6"/></svg></div><span class="conv-icon__label">Meeting Notes</span></div>
+        <!-- Jira 产品 icon：Atlassian 蓝箭头 -->
+        <div class="conv-icon"><div class="conv-icon__box"><svg viewBox="0 0 24 24" fill="#2684FF" xmlns="http://www.w3.org/2000/svg"><path d="M11.571 4.5L3 10.5v9h6v-6h3v6h6v-9L12.429 4.5h-.858zM12 3.5l8.5 6v10h-7v-6h-3v6h-7v-10L12 3.5z"/></svg></div><span class="conv-icon__label">Jira Tickets</span></div>
+      </div>
+
+      <!-- Convergence glow -->
+      <div class="conv-glow-wrap">
+        <div class="conv-glow"></div>
+      </div>
+
+      <!-- Phase 1: More Context. More Magic. -->
+      <div class="conv-phrase-1">
+        <p class="conv-headline">More <em class="conv-em"> Context</em>.<br>More Magic.</p>
+      </div>
+
+      <!-- Phase 2: Moxt morph -->
+      <div class="conv-phrase-2">
+        <p class="conv-moxt-text"><span class="m-mo">Mo</span><span class="m-re">re</span><span class="m-sp"> </span><span class="m-conte">Conte</span><span class="m-xt">xt.</span></p>
+      </div>
+
+      <!-- Phase 3: CTA — Logo + Moxt，副标题在下，按钮最下，不重叠 -->
+      <div class="conv-cta-wrap">
+        <div class="conv-cta-brand">
+          <div class="conv-cta-logo" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 90 100" fill="none">
+              <path d="M5.45 78.74C2.08 76.77 0 73.16 0 69.25V30.66C0 26.76 2.07 23.15 5.44 21.18L39.15 1.5C42.57-.5 46.8-.5 50.22 1.5L83.84 21.13C87.21 23.1 89.28 26.71 89.28 30.61v38.92C89.28 73.43 87.21 77.04 83.84 79.01L50.44 98.5C47.02 100.5 42.8 100.5 39.38 98.51L5.45 78.74z" fill="#29C16A"/>
+              <path d="M0 18.07v27.68c0 1.45.77 2.79 2.02 3.52l23.88 13.95c1.27.74 2.83.74 4.1 0L53.84 49.46c1.26-.73 2.04-2.08 2.04-3.54V17.96c0-1.45-.78-2.79-2.03-3.52L30.09.56C28.81-.19 27.24-.19 25.97.56L2.02 14.54C.77 15.27 0 16.62 0 18.07z" transform="translate(16.7 18.1)" fill="#fff"/>
+              <path d="M0 0l.01 25.88 22.54 12.93V12.9L0 0z" transform="translate(22.2 36.83)" fill="#29C16A"/>
+            </svg>
+          </div>
+          <span class="conv-cta-moxt">Moxt.</span>
+        </div>
+        <p class="conv-cta-sub">The workspace where your AI Agents live, learn, and build — together.</p>
+        <a href="#" class="btn btn-green">Get Started Free →</a>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════
+       FOOTER  ·  白色，左品牌/社交 + 右双栏 + 底版权
+  ══════════════════════════════════════════ -->
+  <footer class="footer">
+    <div class="footer__inner">
+      <div class="footer__top">
+        <div class="footer__brand">
+          <a href="/" class="footer__logo-wrap" aria-label="Moxt">
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 349.8666 100" fill="none">
+              <defs>
+                <clipPath id="footer-clip-1">
+                  <path d="M0 0L236.111 0L236.111 85L0 85L0 0Z" transform="matrix(1 0 0 1 113.756 7.48969)"/>
+                </clipPath>
+              </defs>
+              <g clip-path="url(#footer-clip-1)">
+                <ellipse cx="30.726772" cy="32.684521" rx="30.726772" ry="32.684521" transform="matrix(1 0 0 1 189.479 27.1205)" fill="#212121"/>
+                <ellipse cx="15.69634" cy="16.696428" rx="15.69634" ry="16.696428" transform="matrix(1 0 0 1 204.509 43.1087)" fill="#fff"/>
+                <path d="M65.0685 0L52.7968 0C52.7968 0 51.9406 0.202381 51.7504 0.607143L35.0076 28.131C34.5319 28.9405 33.2953 28.9405 32.8196 28.131L16.3622 0.607143C16.3622 0.607143 15.6963 0 15.2207 0L2.66362 0C1.14155 0 0 1.31548 0 2.83333L0 82.0655C0 83.6845 1.23668 85 2.75875 84.8988L13.6035 84.8988C15.1256 84.7976 16.2671 83.4822 16.2671 81.9643L16.2671 31.4702C16.4574 29.8512 17.5038 31.4702 17.5038 31.4702L31.5829 54.4405C32.6294 56.1607 35.0076 56.1607 36.054 54.4405L50.1332 30.9643C50.1332 30.9643 51.465 28.8393 51.465 30.9643L51.465 81.9643C51.465 83.5834 52.7016 84.7976 54.1286 84.7976L65.0685 84.7976C66.5905 84.7976 67.7321 83.4822 67.7321 81.9643L67.7321 2.83333C67.7321 1.21429 66.4954 0 65.0685 0Z" transform="matrix(1 0 0 1 113.756 7.48969)" fill="#212121"/>
+                <path d="M57.0167 60.6569L39.4178 33.1331C38.847 32.2224 38.847 30.9069 39.4178 29.9962L57.0961 1.72125C58.1425 -0.100178 55.9546 0.0010119 55.9546 0.0010119L56.1448 0.0010119L41.3998 0.0010119C40.5436 0.0010119 39.6874 0.506964 39.1167 1.2153L29.4292 16.2343C28.8584 17.145 27.6217 17.145 27.051 16.2343L17.9186 1.35926C17.4429 0.549741 16.5868 0.0437889 15.6355 0.0437889L1.46119 0.0437889C1.46119 0.0437889 -0.821917 0.0437888 0.319634 1.86522L18.1088 30.0974C18.6796 31.0081 18.6796 32.3235 18.1088 33.2343L0.224503 60.8593C-0.251146 62.0735 0.319634 62.3771 0.60502 62.4783L16.5868 62.4783C17.5381 62.4783 18.4893 61.9723 18.965 61.0616L28.0023 45.5795C28.5731 44.6688 29.8097 44.6688 30.3805 45.5795L39.5129 61.0616C39.9886 61.9723 40.9399 62.4783 41.8912 62.4783L56.446 62.4783C56.446 62.4783 57.3973 62.0735 56.8265 60.6569L57.0167 60.6569Z" transform="matrix(1 0 0 1 250.708 30.1122)" fill="#212121"/>
+                <path d="M34.2466 16.7976L23.7824 16.7976L23.7824 2.83333C23.7824 1.21429 22.5457 0 21.1187 0L11.035 0C9.51295 0 8.37139 1.31548 8.37139 2.83333L8.37139 16.8988L2.5685 16.8988C1.14156 16.8988 0 18.1131 0 19.631L0 27.625C0 29.1429 1.14156 30.3571 2.5685 30.3571L8.46652 30.3571L8.46652 64.9643C8.46652 72.8571 14.5548 79.3333 21.9749 79.3333L34.1515 79.3333C35.6735 79.3333 36.8151 78.0178 36.8151 76.5L36.8151 67.6964C36.8151 65.0655 35.3881 64.5595 34.6271 64.5595L29.8706 64.5595C29.8706 64.5595 23.5921 64.5595 23.7824 58.3869L23.7824 30.3571L34.2466 30.3571C35.6735 30.3571 36.8151 29.1429 36.8151 27.625L36.8151 19.631C36.8151 18.1131 35.6735 16.8988 34.2466 16.8988L34.2466 16.7976Z" transform="matrix(1 0 0 1 313.052 13.2576)" fill="#212121"/>
+              </g>
+              <defs>
+                <clipPath id="footer-clip-2">
+                  <path d="M0 0L89.2799 0L89.2799 100L0 100L0 0Z" transform="matrix(1 0 0 1 0 0)"/>
+                </clipPath>
+              </defs>
+              <g clip-path="url(#footer-clip-2)">
+                <path d="M5.45065 78.7379C2.07612 76.7705 0 73.1587 0 69.2536L0 50.2785L0.00659087 50.2752L0 50.2719L0 30.664C0 26.7622 2.07118 23.1537 5.44076 21.1847L39.1465 1.49778C42.5671 -0.499259 46.7985 -0.499259 50.2191 1.49778L83.8392 21.1336C87.2088 23.101 89.2799 26.7112 89.2799 30.613L89.2799 69.5288C89.2799 73.4322 87.2071 77.0424 83.8359 79.0098L50.4383 98.5039C47.0209 100.498 42.7962 100.499 39.3772 98.5089L5.449 78.7395L5.45065 78.7379Z" transform="matrix(1 0 0 1 0 0)" fill="#29C16A"/>
+                <path d="M2.51422e-06 18.0693L2.51422e-06 45.7477C2.51422e-06 47.1993 0.771135 48.5422 2.0234 49.2738L25.9005 63.2217C27.1659 63.9615 28.7329 63.9648 30.0017 63.2316L53.8441 49.4583C55.1063 48.7284 55.8857 47.3806 55.8857 45.9223L55.8857 17.9638C55.8857 16.5122 55.1145 15.1693 53.8606 14.4377L30.0857 0.557341C28.8137 -0.185781 27.2401 -0.185781 25.968 0.557341L2.02176 14.5432C0.767847 15.2748 -0.00163676 16.6176 2.51422e-06 18.0693Z" transform="matrix(1 0 0 1 16.6963 18.1113)" fill="#fff"/>
+                <path d="M0 0L0.00823658 25.8758L22.5507 38.8104L22.5507 12.9L0 0Z" transform="matrix(1 0 0 1 22.2145 36.8347)" fill="#29C16A"/>
+              </g>
+            </svg>
+          </a>
+          <p class="footer__tagline">The workspace where your AI Agents live, learn, and build — together.</p>
+          <ul class="footer__social">
+            <li><a href="#" aria-label="X"><svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a></li>
+            <li><a href="#" aria-label="GitHub"><svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0012 2z"/></svg></a></li>
+            <li><a href="#" aria-label="Email"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 6L12 13 2 6"/></svg></a></li>
+          </ul>
+          <div class="footer__lang" role="group" aria-label="Language">
+            <button type="button" class="footer__lang-trigger" aria-expanded="false" aria-haspopup="listbox" id="footer-lang-btn">
+              <span>English</span>
+              <svg class="footer__lang-arrow" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4l4 4 4-4"/></svg>
+            </button>
+            <div class="footer__lang-drop" role="listbox" aria-hidden="true" id="footer-lang-drop">
+              <a href="#" class="is-active" role="option" data-lang="en">English</a>
+              <a href="#" role="option" data-lang="zh">中文</a>
+            </div>
+          </div>
+        </div>
+        <div class="footer__cols">
+          <div class="footer__col">
+            <ul>
+              <li><a href="blog.html">Blog</a></li>
+              <li><a href="whats-new.html">What's New</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <p class="footer__copy">© 2026 Moxt. All rights reserved.</p>
+    </div>
+  </footer>
+
+
+  <!-- ══════════════════════════════════════════
+       SCRIPTS
+  ══════════════════════════════════════════ -->
+  <script>
+  /**
+   * SmoothScroll — Lenis + GSAP ticker，失败静默降级
+   */
+  const SmoothScroll = (() => ({
+    init() {
+      if (typeof Lenis === 'undefined') return;
+      try {
+        const lenis = new Lenis({
+          duration: 1.15,
+          easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+          smoothWheel: true,
+          wheelMultiplier: 0.85,
+        });
+        gsap.ticker.add(t => lenis.raf(t * 1000));
+        gsap.ticker.lagSmoothing(0);
+        lenis.on('scroll', ScrollTrigger.update);
+        window.__lenis = lenis;
+      } catch(e) {}
+    },
+  }))();
+
+
+  /**
+   * Hero — 入场时间线
+   */
+  const Hero = (() => ({
+    init() {
+      const tl = gsap.timeline({ defaults: { ease: 'expo.out' }, delay: 0.1 });
+
+      tl.to('.h1-line-inner', {
+        y: '0%', opacity: 1,
+        stagger: 0.1, duration: 1.0, ease: 'expo.out',
+      }, '-=0.4');
+
+      tl.to('.hero__foot', { opacity: 1, y: 0, duration: 0.9 }, '-=0.5');
+
+      tl.to('.hero__right', { opacity: 1, y: 0, duration: 1.1, ease: 'expo.out' }, '-=0.7');
+
+
+      /* 标题轻微视差 */
+      gsap.to('.hero__h1', {
+        y: '-8%', ease: 'none',
+        scrollTrigger: {
+          trigger: '.hero', start: 'top top', end: 'bottom top', scrub: 1.5,
+        },
+      });
+    },
+  }))();
+
+
+  /**
+   * ContextMagic — 侧边粘性滚动叙事（参考 Claude 产品页：视口中心决定当前 step，右侧配图同步切换）
+   */
+  const ContextMagic = (() => {
+    const section = () => document.querySelector('.context-magic');
+    const steps = () => document.querySelectorAll('.cm-step');
+    const visuals = () => document.querySelectorAll('.cm-visual');
+
+    function setActiveByViewportCenter() {
+      const stepEls = steps();
+      const visualEls = visuals();
+      if (!stepEls.length || !visualEls.length) return;
+      const viewportCenter = window.innerHeight * 0.5;
+      let activeIndex = 0;
+      for (let i = 0; i < stepEls.length; i++) {
+        const rect = stepEls[i].getBoundingClientRect();
+        if (rect.top <= viewportCenter && rect.bottom >= viewportCenter) {
+          activeIndex = i;
+          break;
+        }
+        if (rect.bottom < viewportCenter) activeIndex = i;
+      }
+      visualEls.forEach((v, j) => v.classList.toggle('active', j === activeIndex));
+    }
+
+    return {
+      init() {
+        gsap.from('.context-magic__title', {
+          opacity: 0, y: 30, duration: 1.0, ease: 'expo.out',
+          scrollTrigger: { trigger: '.context-magic', start: 'top 78%' },
+        });
+
+        const stepEls = steps();
+        const visualEls = visuals();
+        if (!stepEls.length || !visualEls.length) return;
+
+        stepEls.forEach((step) => {
+          gsap.from(step, {
+            opacity: 0, y: 28, duration: 0.85, ease: 'expo.out',
+            scrollTrigger: { trigger: step, start: 'top 88%' },
+          });
+        });
+
+        setActiveByViewportCenter();
+        ScrollTrigger.create({
+          trigger: '.context-magic',
+          start: 'top bottom',
+          end: 'bottom top',
+          onUpdate: setActiveByViewportCenter,
+        });
+        ScrollTrigger.addEventListener('refresh', setActiveByViewportCenter);
+        window.addEventListener('resize', () => { ScrollTrigger.refresh(); setActiveByViewportCenter(); });
+      },
+    };
+  })();
+
+
+  /**
+   * Manifesto — 依次揭示动画
+   */
+  const Manifesto = (() => ({
+    init() {
+      const tl = gsap.timeline({
+        scrollTrigger: { trigger: '.manifesto', start: 'top 75%' },
+      });
+      tl.to('.manifesto__title', { opacity: 1, y: 0, duration: 0.8, ease: 'expo.out' });
+      tl.to('.m-para', { opacity: 1, y: 0, duration: 0.7, stagger: 0.15, ease: 'expo.out' }, '-=0.4');
+      tl.to('.m-climax', { opacity: 1, y: 0, duration: 0.8, ease: 'expo.out' }, '-=0.3');
+      tl.to('.m-author', { opacity: 1, x: 0, duration: 0.6, ease: 'expo.out' }, '-=0.2');
+    },
+  }))();
+
+
+  /**
+   * SellingPoints — 左右淡入
+   */
+  const SellingPoints = (() => ({
+    init() {
+      gsap.from('.selling__title', {
+        opacity: 0, y: 30, duration: 1.0, ease: 'expo.out',
+        scrollTrigger: { trigger: '.selling__head', start: 'top 82%' },
+      });
+      gsap.from('.selling__desc', {
+        opacity: 0, y: 20, duration: 0.9, ease: 'expo.out', delay: 0.1,
+        scrollTrigger: { trigger: '.selling__head', start: 'top 82%' },
+      });
+
+      document.querySelectorAll('[data-sp]').forEach(card => {
+        const [left, right] = card.children;
+        gsap.from(left, {
+          opacity: 0, x: -30, duration: 1.0, ease: 'expo.out',
+          scrollTrigger: { trigger: card, start: 'top 78%' },
+        });
+        gsap.from(right, {
+          opacity: 0, x: 30, duration: 1.0, ease: 'expo.out', delay: 0.08,
+          scrollTrigger: { trigger: card, start: 'top 78%' },
+        });
+      });
+    },
+  }))();
+
+
+  /**
+   * Showcase — Bento 卡片交错入场
+   */
+  const Showcase = (() => ({
+    init() {
+      gsap.to('.showcase__eyebrow', {
+        opacity: 1, y: 0, duration: 0.8, ease: 'expo.out',
+        scrollTrigger: { trigger: '.showcase', start: 'top 82%' },
+      });
+      gsap.from('.showcase__title, .showcase__sub', {
+        opacity: 0, y: 24, stagger: 0.1, duration: 0.9, ease: 'expo.out',
+        scrollTrigger: { trigger: '.showcase__head', start: 'top 82%' },
+      });
+      gsap.to('.bc', {
+        opacity: 1, y: 0,
+        stagger: { amount: 0.55, from: 'start', grid: [2, 4] },
+        duration: 0.75, ease: 'expo.out',
+        scrollTrigger: { trigger: '.bento', start: 'top 84%' },
+      });
+    },
+  }))();
+
+
+  /**
+   * Compare — Not better. Just different. 浮动呼吸卡片入场
+   */
+  const Compare = (() => ({
+    init() {
+      gsap.from('.compare__title', {
+        opacity: 0, y: 24, duration: 0.9, ease: 'expo.out',
+        scrollTrigger: { trigger: '.compare-section', start: 'top 82%' },
+      });
+      gsap.from('.compare__sub', {
+        opacity: 0, y: 20, duration: 0.9, ease: 'expo.out', delay: 0.08,
+        scrollTrigger: { trigger: '.compare-section', start: 'top 82%' },
+      });
+      gsap.from('.compare-card', {
+        opacity: 0, y: 32,
+        stagger: 0.12,
+        duration: 0.8, ease: 'expo.out',
+        scrollTrigger: { trigger: '.compare__grid', start: 'top 88%' },
+      });
+    },
+  }))();
+
+
+  /**
+   * Convergence — Scroll-Driven Brand Animation
+   */
+  const Convergence = (() => ({
+    init() {
+      const section = document.querySelector('.conv-section');
+      if (!section) return;
+
+      const icons = gsap.utils.toArray('.conv-icon');
+      // 限制参考宽度 1600px，避免大屏时图标超出视口
+      const refW = Math.min(window.innerWidth, 1600);
+      const refH = window.innerHeight;
+      const vw = refW / 100;
+      const vh = refH / 100;
+
+      // Scatter offsets from viewport center (% units) — 11 items, no Figma
+      const scatter = [
+        { x: -38, y: -22 }, { x:  24, y: -26 }, { x: -22, y:  22 },
+        { x:  34, y:  18 }, { x:  -1, y: -30 }, { x: -44, y:   2 },
+        { x:  42, y:  -8 }, { x:  14, y:  26 }, { x: -16, y:  28 },
+        { x:  28, y: -16 }, { x: -30, y:  12 },
+      ];
+
+      // Position all icons at scatter positions (centered anchor)
+      icons.forEach((icon, i) => {
+        const s = scatter[i % scatter.length];
+        gsap.set(icon, { x: s.x * vw, y: s.y * vh, opacity: 0 });
+      });
+
+      // Hide phase layers
+      gsap.set(['.conv-glow-wrap', '.conv-phrase-1', '.conv-phrase-2', '.conv-cta-wrap'], { opacity: 0 });
+      gsap.set(['.conv-phrase-1', '.conv-phrase-2', '.conv-cta-wrap'], { y: 28 });
+
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: section,
+          start: 'top top',
+          end: 'bottom bottom',
+          scrub: 1.5,
+        },
+      });
+
+      // Phase 1 (t=0–2): Icons fade in scattered
+      tl.to(icons, {
+        opacity: 1,
+        duration: 2,
+        stagger: { amount: 1.5, from: 'random' },
+        ease: 'power2.out',
+      }, 0);
+
+      // Phase 2 (t=2.5–6): Icons converge to center and vanish
+      tl.to(icons, {
+        x: 0, y: 0,
+        scale: 0.3,
+        opacity: 0,
+        duration: 3,
+        stagger: { amount: 1.2, from: 'edges' },
+        ease: 'power3.in',
+      }, 2.5);
+
+      // Phase 3 (t=5–7): Glow burst
+      tl.to('.conv-glow-wrap', { opacity: 1, scale: 1, duration: 0.7 }, 5.2);
+      tl.to('.conv-glow-wrap', { opacity: 0, scale: 1.7, duration: 0.9 }, 6.3);
+
+      // Phase 4 (t=7.2–9.5): "More Context. More Magic."
+      tl.to('.conv-phrase-1', { opacity: 1, y: 0, duration: 0.8 }, 7.2);
+      tl.to('.conv-phrase-1', { opacity: 0, y: -20, duration: 0.5 }, 9.5);
+
+      // Phase 5 (t=10–12.5): Moxt morph
+      tl.to('.conv-phrase-2', { opacity: 1, y: 0, duration: 0.8 }, 10.2);
+      tl.to(['.m-re', '.m-sp', '.m-conte'], {
+        opacity: 0,
+        width: 0,
+        duration: 0.7,
+        stagger: 0.2,
+        ease: 'power2.inOut',
+      }, 11.8);
+
+      // Phase 6 (t=13): CTA
+      tl.to('.conv-phrase-2', { opacity: 0, duration: 0.3 }, 13);
+      tl.to('.conv-cta-wrap', { opacity: 1, y: 0, duration: 0.9 }, 13.2);
+    },
+  }))();
+
+
+  /**
+   * CoverFlow — 匀速连续滚动 + 灵敏拖拽（GSAP）
+   */
+  const CoverFlow = (() => {
+    const CARD_WIDTH = 336;
+    const GAP = 24;
+    const CARD_STEP = CARD_WIDTH + GAP;
+    const CYCLE_WIDTH = CARD_STEP * 8;
+    const SPEED_PX_PER_SEC = CARD_STEP / 4.5;
+    const track = () => document.querySelector('.coverflow__track');
+    const stage = () => document.querySelector('.coverflow__stage');
+    let tween = null;
+    let autoTween = null;
+    let dragStartX = 0, dragStartTx = 0;
+    let isDragging = false;
+    let centerX = 0;
+
+    function getX() { const tr = track(); return tr ? gsap.getProperty(tr, 'x') || 0 : 0; }
+    function setX(v) { const tr = track(); if (tr) gsap.set(tr, { x: v }); }
+
+    function runAutoPlay() {
+      if (autoTween) autoTween.kill();
+      const current = getX();
+      const target = current <= centerX - CYCLE_WIDTH ? centerX : current - CYCLE_WIDTH;
+      const dur = Math.abs(target - current) / SPEED_PX_PER_SEC;
+      const tr = track();
+      if (!tr) return;
+      autoTween = gsap.to(tr, {
+        x: target,
+        duration: dur,
+        ease: 'none',
+        onComplete: () => {
+          if (getX() <= centerX - CYCLE_WIDTH) setX(centerX);
+          autoTween = null;
+          runAutoPlay();
+        },
+      });
+    }
+
+    function stopAutoPlay() {
+      if (autoTween) { autoTween.kill(); autoTween = null; }
+    }
+
+    function getPointerX(e) {
+      if (e.touches?.length) return e.touches[0].clientX;
+      if (e.changedTouches?.length) return e.changedTouches[0].clientX;
+      return e.clientX;
+    }
+
+    function onPointerDown(e) {
+      isDragging = false;
+      stopAutoPlay();
+      dragStartX = getPointerX(e);
+      dragStartTx = getX();
+      const move = (ev) => {
+        isDragging = true;
+        const dx = getPointerX(ev) - dragStartX;
+        setX(dragStartTx + dx);
+      };
+      const up = (ev) => {
+        const dx = getPointerX(ev) - dragStartX;
+        let tx = dragStartTx + dx;
+        if (tx <= centerX - CYCLE_WIDTH) tx = centerX;
+        else if (tx > centerX) tx = tx - CYCLE_WIDTH;
+        setX(tx);
+        document.removeEventListener('mousemove', move);
+        document.removeEventListener('mouseup', up);
+        document.removeEventListener('touchmove', move, { passive: true });
+        document.removeEventListener('touchend', up);
+        setTimeout(() => { isDragging = false; }, 50);
+        setTimeout(runAutoPlay, 600);
+      };
+      document.addEventListener('mousemove', move);
+      document.addEventListener('mouseup', up);
+      document.addEventListener('touchmove', move, { passive: true });
+      document.addEventListener('touchend', up);
+    }
+
+    return {
+      init() {
+        const st = stage();
+        const stageW = st ? st.offsetWidth : window.innerWidth;
+        centerX = stageW / 2 - CARD_WIDTH / 2;
+        setX(centerX);
+        gsap.from('.coverflow-section__eyebrow', {
+          opacity: 0, y: 16, duration: 0.8, ease: 'expo.out',
+          scrollTrigger: { trigger: '#coverflow', start: 'top 82%' },
+        });
+        gsap.from('.coverflow-section__title', {
+          opacity: 0, y: 24, duration: 0.9, ease: 'expo.out', delay: 0.06,
+          scrollTrigger: { trigger: '#coverflow', start: 'top 82%' },
+        });
+        gsap.from('.coverflow-section__sub', {
+          opacity: 0, y: 20, duration: 0.9, ease: 'expo.out', delay: 0.08,
+          scrollTrigger: { trigger: '#coverflow', start: 'top 82%' },
+        });
+        if (st) {
+          st.addEventListener('mousedown', onPointerDown);
+          st.addEventListener('touchstart', onPointerDown, { passive: true });
+          st.addEventListener('mouseenter', stopAutoPlay);
+          st.addEventListener('mouseleave', () => setTimeout(runAutoPlay, 800));
+        }
+        runAutoPlay();
+      },
+    };
+  })();
+
+
+  /**
+   * Bootstrap
+   */
+  document.addEventListener('DOMContentLoaded', async () => {
+    await Promise.race([
+      document.fonts.ready,
+      new Promise(r => setTimeout(r, 1500)),
+    ]);
+
+    gsap.registerPlugin(ScrollTrigger);
+    document.body.classList.add('ready');
+
+    [SmoothScroll, Hero, Manifesto, ContextMagic, CoverFlow, Showcase, Compare, Convergence].forEach(m => {
+      try { m.init(); } catch(e) { console.warn(e); }
+    });
+
+    /* 导航滚动毛玻璃 */
+    const navEl = document.querySelector('.nav');
+    const toggleNav = () => navEl.classList.toggle('scrolled', window.scrollY > 10);
+    window.addEventListener('scroll', toggleNav, { passive: true });
+    toggleNav();
+
+    /* 平滑锚点 */
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        const href = a.getAttribute('href');
+        if (href === '#') { e.preventDefault(); return; }
+        const el = document.querySelector(href);
+        if (!el) return;
+        e.preventDefault();
+        window.__lenis
+          ? window.__lenis.scrollTo(el, { offset: -64, duration: 1.3 })
+          : el.scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+
+    /* Footer 语言下拉：English + 箭头，点击展开/收起 */
+    (function() {
+      const wrap = document.querySelector('.footer__lang');
+      const btn = document.getElementById('footer-lang-btn');
+      const drop = document.getElementById('footer-lang-drop');
+      const triggerText = btn && btn.querySelector('span');
+      if (!wrap || !btn || !drop || !triggerText) return;
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        wrap.classList.toggle('open');
+        btn.setAttribute('aria-expanded', wrap.classList.contains('open'));
+        drop.setAttribute('aria-hidden', !wrap.classList.contains('open'));
+      });
+      drop.querySelectorAll('a').forEach(a => {
+        a.addEventListener('click', function(e) {
+          e.preventDefault();
+          if (a.classList.contains('is-active')) { wrap.classList.remove('open'); return; }
+          drop.querySelectorAll('a').forEach(x => x.classList.remove('is-active'));
+          a.classList.add('is-active');
+          triggerText.textContent = a.textContent.trim();
+          wrap.classList.remove('open');
+          btn.setAttribute('aria-expanded', 'false');
+          drop.setAttribute('aria-hidden', 'true');
+        });
+      });
+      document.addEventListener('click', function(e) {
+        if (wrap.contains(e.target)) return;
+        wrap.classList.remove('open');
+        btn.setAttribute('aria-expanded', 'false');
+        drop.setAttribute('aria-hidden', 'true');
+      });
+    })();
+  });
+  </script>
+</body>
+</html>
