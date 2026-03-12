@@ -546,8 +546,9 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      background: #F7F7F5;
+      border: none;
     }
-    .cm-visual__img { background: #F7F7F5; }
     .cm-visual__img .cm-illus,
     .cm-visual__img svg {
       width: 100%;
@@ -558,6 +559,8 @@
       width: 100%;
       height: auto;
       object-fit: contain;
+      mix-blend-mode: multiply;
+      border-radius: 24px;
     }
     @media (max-width: 900px) {
       .context-magic__wrap {
@@ -728,8 +731,39 @@
       padding-top: 0.5rem;
       border-left-color: var(--border);
     }
+    .coverflow-card--dark .coverflow-card__inner {
+      background: #1A1A1A;
+    }
+    .coverflow-card--dark .coverflow-card__night {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-top: 0.25rem;
+      margin-top: auto;
+    }
+    .coverflow-card--dark .coverflow-card__night svg {
+      width: 40px;
+      height: 40px;
+    }
+    .coverflow-card--dark .coverflow-card__time {
+      color: #F0F0ED;
+    }
+    .coverflow-card--dark .coverflow-card__dot {
+      background: #29C16A;
+      box-shadow: 0 0 0 2px rgba(41,193,106,0.3);
+    }
+    .coverflow-card--dark .coverflow-card__agent,
+    .coverflow-card--dark .coverflow-card__you {
+      color: #A0A09A;
+      border-left-color: #333;
+    }
+    .coverflow-card--dark .coverflow-card__agent strong,
+    .coverflow-card--dark .coverflow-card__you strong {
+      color: #D0D0CB;
+    }
     .coverflow-card--cycle .coverflow-card__inner {
       background: #F7F7F5;
+      cursor: pointer;
     }
     .coverflow-card--cycle .coverflow-card__illus {
       background: #F7F7F5 !important;
@@ -763,7 +797,16 @@
       margin: 0;
     }
     .coverflow-card__time--arrow .coverflow-card__dot { display: none; }
-    .coverflow-card__agent strong,
+    .coverflow-card__agent strong {
+      display: block;
+      font-family: var(--sans);
+      font-size: 0.6875rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 0.2rem;
+    }
     .coverflow-card__you strong {
       display: block;
       font-family: var(--sans);
@@ -1881,15 +1924,9 @@
           <article class="coverflow-card" data-cf-index="2"><div class="coverflow-card__inner"><div class="coverflow-card__illus" style="background:#E8D5F2"></div><div class="coverflow-card__body"><p class="coverflow-card__time"><span class="coverflow-card__dot"></span>11:00 AM - New client onboarding</p><p class="coverflow-card__agent"><strong>AGENT:</strong> Deal closed → auto-triggered: onboarding checklist, welcome deck, project tracker, kick-off agenda.</p><p class="coverflow-card__you"><strong>YOU:</strong> Client gets a polished Day 1 experience. You didn't touch it.</p></div></div></article>
           <article class="coverflow-card" data-cf-index="3"><div class="coverflow-card__inner"><div class="coverflow-card__illus" style="background:#FFD4D4"></div><div class="coverflow-card__body"><p class="coverflow-card__time"><span class="coverflow-card__dot"></span>2:00 PM - Growth diagnosis</p><p class="coverflow-card__agent"><strong>AGENT:</strong> MRR flat → ran funnel analysis, pulled competitor intel, built retention dashboard, drafted 3 experiments.</p><p class="coverflow-card__you"><strong>YOU:</strong> Walk into the growth meeting with a full plan ready.</p></div></div></article>
           <article class="coverflow-card" data-cf-index="4"><div class="coverflow-card__inner"><div class="coverflow-card__illus" style="background:#FFF4B8"></div><div class="coverflow-card__body"><p class="coverflow-card__time"><span class="coverflow-card__dot"></span>5:00 PM - Board deck assembly</p><p class="coverflow-card__agent"><strong>AGENT:</strong> Pulled live data from finance, product, sales. Assembled board deck + CEO talking points.</p><p class="coverflow-card__you"><strong>YOU:</strong> Board prep: 2 hours of review instead of 2 weeks.</p></div></div></article>
-          <article class="coverflow-card coverflow-card--cycle" data-cf-index="5"><div class="coverflow-card__inner"><div class="coverflow-card__illus coverflow-card__illus--gray"><span class="coverflow-card__cycle-arrow">→</span><span class="coverflow-card__cycle-time">7:00 AM</span><p class="coverflow-card__cycle">The cycle continues</p></div></div></article>
-          <article class="coverflow-card" data-cf-index="7"><div class="coverflow-card__inner"><div class="coverflow-card__illus" style="background:#F5E6F0"></div><div class="coverflow-card__body"><p class="coverflow-card__time"><span class="coverflow-card__dot"></span>9:00 PM - Investor update</p><p class="coverflow-card__agent"><strong>AGENT:</strong> Pulled portfolio data, built dashboard, drafted LP letter, formatted PDF. Ready to send.</p><p class="coverflow-card__you"><strong>YOU:</strong> You're at dinner. The quarterly update wrote itself.</p></div></div></article>
-          <article class="coverflow-card" data-cf-index="8"><div class="coverflow-card__inner"><div class="coverflow-card__illus" style="background:#B8E6D5"></div><div class="coverflow-card__body"><p class="coverflow-card__time"><span class="coverflow-card__dot"></span>7:00 AM - Morning ops briefing</p><p class="coverflow-card__agent"><strong>AGENT:</strong> Scanned overnight metrics. Flagged 2 anomalies. Drafted exec brief with actions.</p><p class="coverflow-card__you"><strong>YOU:</strong> Still having coffee. The brief is already in your inbox.</p></div></div></article>
-          <article class="coverflow-card" data-cf-index="9"><div class="coverflow-card__inner"><div class="coverflow-card__illus" style="background:#FFE5B4"></div><div class="coverflow-card__body"><p class="coverflow-card__time"><span class="coverflow-card__dot"></span>9:30 AM - Product launch prep</p><p class="coverflow-card__agent"><strong>AGENT:</strong> Built pricing page, wrote email sequences, generated social assets, compiled press kit.</p><p class="coverflow-card__you"><strong>YOU:</strong> Review and approve. One round of feedback, done.</p></div></div></article>
-          <article class="coverflow-card" data-cf-index="10"><div class="coverflow-card__inner"><div class="coverflow-card__illus" style="background:#E8D5F2"></div><div class="coverflow-card__body"><p class="coverflow-card__time"><span class="coverflow-card__dot"></span>11:00 AM - New client onboarding</p><p class="coverflow-card__agent"><strong>AGENT:</strong> Deal closed → auto-triggered: onboarding checklist, welcome deck, project tracker, kick-off agenda.</p><p class="coverflow-card__you"><strong>YOU:</strong> Client gets a polished Day 1 experience. You didn't touch it.</p></div></div></article>
-          <article class="coverflow-card" data-cf-index="11"><div class="coverflow-card__inner"><div class="coverflow-card__illus" style="background:#FFD4D4"></div><div class="coverflow-card__body"><p class="coverflow-card__time"><span class="coverflow-card__dot"></span>2:00 PM - Growth diagnosis</p><p class="coverflow-card__agent"><strong>AGENT:</strong> MRR flat → ran funnel analysis, pulled competitor intel, built retention dashboard, drafted 3 experiments.</p><p class="coverflow-card__you"><strong>YOU:</strong> Walk into the growth meeting with a full plan ready.</p></div></div></article>
-          <article class="coverflow-card" data-cf-index="12"><div class="coverflow-card__inner"><div class="coverflow-card__illus" style="background:#FFF4B8"></div><div class="coverflow-card__body"><p class="coverflow-card__time"><span class="coverflow-card__dot"></span>5:00 PM - Board deck assembly</p><p class="coverflow-card__agent"><strong>AGENT:</strong> Pulled live data from finance, product, sales. Assembled board deck + CEO talking points.</p><p class="coverflow-card__you"><strong>YOU:</strong> Board prep: 2 hours of review instead of 2 weeks.</p></div></div></article>
-          <article class="coverflow-card coverflow-card--cycle" data-cf-index="12"><div class="coverflow-card__inner"><div class="coverflow-card__illus coverflow-card__illus--gray"><span class="coverflow-card__cycle-arrow">→</span><span class="coverflow-card__cycle-time">7:00 AM</span><p class="coverflow-card__cycle">The cycle continues</p></div></div></article>
-          <article class="coverflow-card" data-cf-index="15"><div class="coverflow-card__inner"><div class="coverflow-card__illus" style="background:#F5E6F0"></div><div class="coverflow-card__body"><p class="coverflow-card__time"><span class="coverflow-card__dot"></span>9:00 PM - Investor update</p><p class="coverflow-card__agent"><strong>AGENT:</strong> Pulled portfolio data, built dashboard, drafted LP letter, formatted PDF. Ready to send.</p><p class="coverflow-card__you"><strong>YOU:</strong> You're at dinner. The quarterly update wrote itself.</p></div></div></article>
+          <article class="coverflow-card coverflow-card--dark" data-cf-index="5"><div class="coverflow-card__inner"><div class="coverflow-card__illus" style="background:#2A2A2A"></div><div class="coverflow-card__body"><p class="coverflow-card__time"><span class="coverflow-card__dot"></span>9:00 PM · Investor update</p><p class="coverflow-card__agent"><strong>AGENT:</strong> Pulled portfolio data, built dashboard, drafted LP letter, formatted PDF. Ready to send.</p><p class="coverflow-card__you"><strong>YOU:</strong> You're at dinner. The quarterly update wrote itself.</p><div class="coverflow-card__night"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" stroke="#FFD966" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="17" cy="5" r="0.5" fill="#FFD966"/><circle cx="19" cy="8" r="0.5" fill="#FFD966"/><path d="M15 2l.3 1 1 .3-1 .3L15 4.6l-.3-1-1-.3 1-.3z" fill="#FFD966"/></svg></div></div></div></article>
+          <article class="coverflow-card coverflow-card--dark" data-cf-index="6"><div class="coverflow-card__inner"><div class="coverflow-card__illus" style="background:#1E1E2E"></div><div class="coverflow-card__body"><p class="coverflow-card__time"><span class="coverflow-card__dot"></span>2:00 AM · Competitive intel refresh</p><p class="coverflow-card__agent"><strong>AGENT:</strong> Scans competitor pages, pricing changes, job postings, press mentions. Updates the living brief.</p><p class="coverflow-card__you"><strong>YOU:</strong> You're asleep. Tomorrow the market landscape is already current.</p><div class="coverflow-card__night"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" stroke="#FFD966" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="17" cy="5" r="0.5" fill="#FFD966"/><circle cx="19" cy="8" r="0.5" fill="#FFD966"/><path d="M15 2l.3 1 1 .3-1 .3L15 4.6l-.3-1-1-.3 1-.3z" fill="#FFD966"/></svg></div></div></div></article>
+          <article class="coverflow-card coverflow-card--cycle" data-cf-index="7"><div class="coverflow-card__inner"><div class="coverflow-card__illus coverflow-card__illus--gray"><span class="coverflow-card__cycle-arrow">→</span><span class="coverflow-card__cycle-time">7:00 AM</span><p class="coverflow-card__cycle">The cycle continues</p></div></div></article>
           </div>
         </div>
       </div>
@@ -2547,6 +2584,16 @@
           st.addEventListener('mousedown', onPointerDown);
           st.addEventListener('touchstart', onPointerDown, { passive: true });
         }
+
+        const cycleEl = document.querySelector('.coverflow-card--cycle');
+        if (cycleEl) {
+          cycleEl.addEventListener('click', () => {
+            stopAutoPlay();
+            const tr = track();
+            if (tr) gsap.to(tr, { x: centerX, duration: 1.2, ease: 'expo.inOut' });
+          });
+        }
+
         runAutoPlay();
       },
     };

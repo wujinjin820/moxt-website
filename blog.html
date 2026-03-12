@@ -23,9 +23,6 @@
       --green-light:  #E8F9EF;
       --serif: 'Lora', Georgia, 'Times New Roman', serif;
       --sans:  'Inter', system-ui, -apple-system, sans-serif;
-      --fs-display: clamp(3rem, 6.5vw, 6.5rem);
-      --fs-h2:      clamp(2rem, 4.5vw, 4.5rem);
-      --fs-h3:      clamp(1.5rem, 2.5vw, 2.5rem);
       --fs-body:    1.0625rem;
       --fs-sm:      0.875rem;
       --fs-xs:      0.75rem;
@@ -47,8 +44,6 @@
     body.ready { visibility: visible; }
     a { color: inherit; text-decoration: none; }
     ::selection { background: var(--green); color: #fff; }
-
-    .wrap { max-width: 1280px; margin: 0 auto; padding: 0 2.5rem; }
 
     .btn {
       display: inline-flex;
@@ -137,176 +132,228 @@
       box-shadow: 0 6px 20px rgba(0,0,0,0.15);
     }
 
-    /* ═══ Hero Header ═══ */
+    /* ═══ Blog Hero ═══ */
     .blog-hero {
-      padding: 10rem 2.5rem 4rem;
-      text-align: center;
+      padding-top: 68px;
+      background: #F7F7F5;
+      border-bottom: 1px solid var(--border);
+    }
+    .blog-hero__inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 2.5rem 2.5rem 1.5rem;
     }
     .blog-hero__title {
       font-family: var(--serif);
+      font-weight: 700;
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      color: var(--fg);
+      margin-bottom: 0.75rem;
+    }
+    .blog-hero__sub {
+      font-size: 1.0625rem;
+      color: var(--fg-mid);
+      line-height: 1.7;
+      max-width: 28rem;
+    }
+
+    /* ═══ Blog Layout ═══ */
+    .blog-layout {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 0 6.5rem 0;
+      margin-top: 0;
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 0;
+      border-top: 1px solid var(--border);
+      position: relative;
+    }
+    .blog-layout::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 260px;
+      width: 1px;
+      background: var(--border);
+    }
+
+    /* ═══ Sidebar ═══ */
+    .blog-sidebar {
+      padding-top: 24px;
+      padding-right: 2rem;
+      position: sticky;
+      top: 68px;
+      align-self: start;
+      max-height: calc(100vh - 88px);
+      overflow-y: auto;
+    }
+    .blog-sidebar::-webkit-scrollbar { width: 0; }
+
+    .sidebar-item {
+      display: block;
+      padding: 0.75rem 0 0.75rem 0.75rem;
+      border-left: 3px solid transparent;
+      cursor: pointer;
+      transition: background 0.25s ease, border-color 0.25s ease;
+    }
+    .sidebar-item:hover {
+      background: rgba(0,0,0,0.02);
+    }
+    .sidebar-item.is-active {
+      border-left-color: var(--green);
+    }
+    .sidebar-item__date {
+      display: block;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: var(--fg-muted);
+      margin-bottom: 0.35rem;
+      letter-spacing: 0.01em;
+      transition: color 0.25s ease;
+    }
+    .sidebar-item.is-active .sidebar-item__date {
+      color: var(--green);
+    }
+    .sidebar-item__title {
+      font-family: var(--serif);
       font-weight: 600;
-      font-size: var(--fs-h2);
+      font-size: 0.9375rem;
+      line-height: 1.25;
+      letter-spacing: -0.01em;
+      color: var(--fg-mid);
+      margin-bottom: 0;
+      transition: color 0.25s ease;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .sidebar-item:hover .sidebar-item__title {
+      color: var(--fg-mid);
+    }
+    .sidebar-item.is-active .sidebar-item__title {
+      color: var(--fg);
+    }
+    /* ═══ Article Content ═══ */
+    .blog-content {
+      padding-left: 3.5rem;
+      min-width: 0;
+    }
+
+    .article-panel { display: none; }
+    .article-panel.is-visible { display: block; margin-top: 48px; }
+
+    .article-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .article-meta__date {
+      font-size: var(--fs-sm);
+      color: var(--fg-muted);
+      font-weight: 500;
+    }
+    .article-title {
+      font-family: var(--serif);
+      font-weight: 700;
+      font-size: clamp(2rem, 4vw, 3.25rem);
       line-height: 1.15;
       letter-spacing: -0.03em;
       color: var(--fg);
       margin-bottom: 1rem;
     }
-    .blog-hero__sub {
+    .article-subtitle {
+      font-size: 1.25rem;
+      color: var(--fg-mid);
+      line-height: 1.7;
+      margin-bottom: 2.5rem;
+    }
+
+    .article-body {
+      border-top: 1px solid var(--border);
+      padding-top: 2.5rem;
+    }
+    .article-body p {
       font-size: 1.125rem;
       color: var(--fg-mid);
-      max-width: 32rem;
-      margin: 0 auto;
-      line-height: 1.7;
+      line-height: 1.85;
+      margin-bottom: 1.5rem;
     }
-
-    /* ═══ Blog List ═══ */
-    .blog-list {
-      padding: 0 2.5rem 6rem;
-    }
-    .blog-list__inner {
-      max-width: 960px;
-      margin: 0 auto;
-    }
-    .blog-list__divider {
-      border: none;
-      border-top: 1px solid var(--border);
-      margin-bottom: 0;
-    }
-
-    /* Featured (first) card */
-    .blog-card--featured {
-      display: block;
-      padding: 3rem;
-      margin-bottom: 2rem;
-      background: var(--white);
-      border-radius: 16px;
-      transition: box-shadow 0.35s ease;
-    }
-    .blog-card--featured:hover {
-      box-shadow: 0 8px 32px rgba(0,0,0,0.05);
-    }
-    .blog-card--featured .blog-card__tag {
-      font-size: 0.75rem;
-      padding: 0.3rem 0.875rem;
-      background: var(--green);
-      color: #fff;
-    }
-    .blog-card--featured .blog-card__date {
-      font-size: var(--fs-sm);
-    }
-    .blog-card--featured .blog-card__title {
+    .article-body h2 {
       font-family: var(--serif);
       font-weight: 600;
-      font-size: clamp(1.75rem, 3.5vw, 2.5rem);
-      line-height: 1.2;
-      letter-spacing: -0.03em;
-      color: var(--fg);
-      margin-bottom: 1rem;
-      transition: color 0.3s;
-    }
-    .blog-card--featured:hover .blog-card__title {
-      color: var(--green);
-    }
-    .blog-card--featured .blog-card__summary {
-      font-size: 1.0625rem;
-      color: var(--fg-mid);
-      line-height: 1.75;
-      max-width: 38rem;
-    }
-    .blog-card--featured .blog-card__header {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      margin-bottom: 1.25rem;
-    }
-    .blog-card--featured .blog-card__arrow {
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      margin-top: 1.5rem;
-      font-size: var(--fs-sm);
-      font-weight: 600;
-      color: var(--green);
-      transition: gap 0.3s var(--ease);
-    }
-    .blog-card--featured:hover .blog-card__arrow {
-      gap: 0.75rem;
-    }
-
-    /* Regular cards */
-    .blog-card {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      align-items: start;
-      gap: 2rem;
-      padding: 2rem 0;
-      border-bottom: 1px solid var(--border);
-    }
-    .blog-card:last-child {
-      border-bottom: none;
-    }
-
-    .blog-card__header {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      margin-bottom: 0.5rem;
-    }
-    .blog-card__date {
-      font-size: var(--fs-xs);
-      font-weight: 500;
-      color: var(--fg-muted);
-      white-space: nowrap;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-    .blog-card__tag {
-      display: inline-block;
-      font-size: 0.6875rem;
-      font-weight: 600;
-      padding: 0.225rem 0.7rem;
-      border-radius: 99px;
-      letter-spacing: 0.03em;
-      background: var(--green);
-      color: #fff;
-    }
-
-    .blog-card__title {
-      font-family: var(--serif);
-      font-weight: 600;
-      font-size: clamp(1.25rem, 2vw, 1.5rem);
+      font-size: clamp(1.5rem, 2.5vw, 2rem);
       line-height: 1.3;
       letter-spacing: -0.02em;
       color: var(--fg);
-      margin-bottom: 0.4rem;
-      transition: color 0.25s;
+      margin-top: 2.5rem;
+      margin-bottom: 1rem;
     }
-    .blog-card:hover .blog-card__title {
+    .article-body h3 {
+      font-family: var(--serif);
+      font-weight: 600;
+      font-size: clamp(1.25rem, 2vw, 1.625rem);
+      line-height: 1.35;
+      letter-spacing: -0.01em;
+      color: var(--fg);
+      margin-top: 2rem;
+      margin-bottom: 0.75rem;
+    }
+    .article-body strong {
+      font-weight: 600;
+      color: var(--fg);
+    }
+    .article-body em { font-style: italic; }
+    .article-body a {
+      color: var(--green);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    .article-body a:hover { color: var(--green-hover); }
+    .article-body ul,
+    .article-body ol {
+      margin: 1rem 0 1.5rem;
+      padding-left: 0;
+      list-style: none;
+    }
+    .article-body ul li,
+    .article-body ol li {
+      position: relative;
+      padding-left: 2rem;
+      font-size: 1.125rem;
+      color: var(--fg-mid);
+      line-height: 1.8;
+      margin-bottom: 0.5rem;
+    }
+    .article-body ul li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.75em;
+      width: 1rem;
+      height: 2px;
+      background: var(--green);
+    }
+    .article-body ol { counter-reset: ol-counter; }
+    .article-body ol li { counter-increment: ol-counter; }
+    .article-body ol li::before {
+      content: counter(ol-counter) '.';
+      position: absolute;
+      left: 0;
+      font-weight: 600;
       color: var(--green);
     }
-
-    .blog-card__summary {
-      font-size: var(--fs-sm);
+    .article-body blockquote {
+      border-left: 3px solid var(--green);
+      padding-left: 1.5rem;
+      margin: 1.5rem 0;
+      font-style: italic;
       color: var(--fg-mid);
-      line-height: 1.65;
-    }
-
-    .blog-card__arrow-side {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: var(--gray);
-      color: var(--fg-muted);
-      flex-shrink: 0;
-      margin-top: 1rem;
-      transition: background 0.3s, color 0.3s;
-    }
-    .blog-card:hover .blog-card__arrow-side {
-      background: var(--green);
-      color: #fff;
     }
 
     /* ═══ Mobile Nav Hamburger ═══ */
@@ -366,12 +413,20 @@
 
     /* ═══ Responsive ═══ */
     @media (max-width: 900px) {
-      .wrap { padding: 0 1.5rem; }
       .nav { padding: 0 1.25rem; }
       .nav__links { display: none; }
       .nav__right { display: none; }
       .nav__hamburger { display: block; justify-self: end; }
       .nav__mobile-menu { display: flex; }
+
+      .blog-hero { padding-left: 1.5rem; padding-right: 1.5rem; }
+      .blog-layout {
+        grid-template-columns: 220px 1fr;
+        padding: 2.5rem 1.5rem 4rem;
+        gap: 0;
+      }
+      .blog-content { padding-left: 2rem; }
+      .blog-sidebar { padding-right: 1.5rem; }
 
       .footer { padding: 2.5rem 1.5rem 1.5rem; }
       .footer__top {
@@ -381,20 +436,43 @@
       .footer__cols { gap: 2rem; }
     }
 
-    @media (max-width: 680px) {
-      .blog-hero { padding: 7rem 1.5rem 3rem; }
-      .blog-list { padding: 0 1.5rem 4rem; }
-      .blog-card--featured { padding: 2rem 1.5rem; }
-      .blog-card--featured .blog-card__title { font-size: 1.5rem; }
-      .blog-card {
+    @media (max-width: 768px) {
+      .blog-hero { padding-top: 7rem; padding-left: 1.25rem; padding-right: 1.25rem; }
+      .blog-layout {
         grid-template-columns: 1fr;
-        gap: 0;
+        padding: 2rem 1.25rem 3rem;
+        margin-top: 2rem;
       }
-      .blog-card__arrow-side { display: none; }
+      .blog-sidebar {
+        position: static;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        padding-right: 0;
+        padding-bottom: 1.5rem;
+        margin-bottom: 2rem;
+        max-height: none;
+        display: flex;
+        gap: 1rem;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+      .sidebar-item {
+        flex-shrink: 0;
+        width: 200px;
+        border-bottom: none;
+        padding: 0.75rem 1rem;
+        background: var(--white);
+        border-radius: 12px;
+        border: 1px solid var(--border);
+      }
+      .sidebar-item.is-active {
+        border-color: var(--green);
+        background: var(--green-light);
+      }
+      .blog-content { padding-left: 0; }
     }
 
     @media (max-width: 640px) {
-      .wrap { padding: 0 1.25rem; }
       .footer { padding: 2rem 1.25rem 1.5rem; }
       .footer__top { gap: 1.5rem; }
       .footer__tagline { font-size: 0.9375rem; max-width: 100%; }
@@ -404,7 +482,6 @@
     }
 
     @media (max-width: 400px) {
-      .wrap { padding: 0 1rem; }
       .nav__mobile-menu { width: 100%; }
     }
 
@@ -514,73 +591,171 @@
 
   <!-- ═══ Hero ═══ -->
   <section class="blog-hero">
-    <h1 class="blog-hero__title">Blog</h1>
-    <p class="blog-hero__sub">Ideas, updates, and the thinking behind Moxt.</p>
-  </section>
-
-
-  <!-- ═══ Blog List ═══ -->
-  <section class="blog-list">
-    <div class="blog-list__inner">
-
-      <!-- Featured Post -->
-      <a href="blog/context-is-the-new-moat.html" class="blog-card--featured">
-        <div class="blog-card__header">
-          <span class="blog-card__date">May 2, 2025</span>
-          <span class="blog-card__tag blog-card__tag--product">Product</span>
-        </div>
-        <h2 class="blog-card__title">Context Is the New Moat</h2>
-        <p class="blog-card__summary">Why the companies that win with AI will be the ones that organize their context best. The moat isn't the model — it's the context you feed it.</p>
-        <span class="blog-card__arrow">Read article <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-      </a>
-
-      <hr class="blog-list__divider" />
-
-      <!-- Regular Posts -->
-      <a href="blog/shipping-moxt-canvas.html" class="blog-card">
-        <div>
-          <div class="blog-card__header">
-            <span class="blog-card__date">April 10, 2025</span>
-            <span class="blog-card__tag blog-card__tag--engineering">Engineering</span>
-          </div>
-          <h2 class="blog-card__title">Shipping Moxt Canvas: A Visual Workspace for AI Teams</h2>
-          <p class="blog-card__summary">How we built a real-time collaborative canvas where humans and AI teammates work side by side.</p>
-        </div>
-        <span class="blog-card__arrow-side">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 3l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </span>
-      </a>
-
-      <a href="blog/why-we-built-an-autonomous-workspace.html" class="blog-card">
-        <div>
-          <div class="blog-card__header">
-            <span class="blog-card__date">March 18, 2025</span>
-            <span class="blog-card__tag blog-card__tag--manifesto">Manifesto</span>
-          </div>
-          <h2 class="blog-card__title">Why We Built an Autonomous Workspace</h2>
-          <p class="blog-card__summary">AI doesn't lack capability — it lacks an office. Here's why we built Moxt.</p>
-        </div>
-        <span class="blog-card__arrow-side">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 3l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </span>
-      </a>
-
-      <a href="blog/small-teams-big-leverage.html" class="blog-card">
-        <div>
-          <div class="blog-card__header">
-            <span class="blog-card__date">February 24, 2025</span>
-            <span class="blog-card__tag blog-card__tag--case-study">Case Study</span>
-          </div>
-          <h2 class="blog-card__title">Small Teams, Big Leverage: The Case for AI-Native Companies</h2>
-          <p class="blog-card__summary">How a 3-person startup ships like a 30-person team using AI teammates in Moxt.</p>
-        </div>
-        <span class="blog-card__arrow-side">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 3l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </span>
-      </a>
-
+    <div class="blog-hero__inner">
+      <h1 class="blog-hero__title">Blog</h1>
+      <p class="blog-hero__sub">Ideas, updates, and the thinking behind Moxt.</p>
     </div>
   </section>
+
+
+  <!-- ═══ Two-Column Layout ═══ -->
+  <div class="blog-layout">
+
+    <!-- Left: Sidebar / Article Directory -->
+    <aside class="blog-sidebar">
+
+      <a class="sidebar-item is-active" data-target="post-1" href="javascript:void(0)">
+        <span class="sidebar-item__date">May 2, 2025</span>
+        <span class="sidebar-item__title">Context Is the New Moat</span>
+      </a>
+
+      <a class="sidebar-item" data-target="post-2" href="javascript:void(0)">
+        <span class="sidebar-item__date">April 10, 2025</span>
+        <span class="sidebar-item__title">Shipping Moxt Canvas: A Visual Workspace for AI Teams</span>
+      </a>
+
+      <a class="sidebar-item" data-target="post-3" href="javascript:void(0)">
+        <span class="sidebar-item__date">March 18, 2025</span>
+        <span class="sidebar-item__title">Why We Built an Autonomous Workspace</span>
+      </a>
+
+      <a class="sidebar-item" data-target="post-4" href="javascript:void(0)">
+        <span class="sidebar-item__date">February 24, 2025</span>
+        <span class="sidebar-item__title">Small Teams, Big Leverage: The Case for AI-Native Companies</span>
+      </a>
+
+    </aside>
+
+    <!-- Right: Article Content -->
+    <main class="blog-content">
+
+      <!-- Post 1: Context Is the New Moat -->
+      <article class="article-panel is-visible" id="post-1">
+        <div class="article-meta">
+          <span class="article-meta__date">May 2, 2025</span>
+        </div>
+        <h1 class="article-title">Context Is the New Moat</h1>
+        <p class="article-subtitle">Why the companies that win with AI will be the ones that organize their context best.</p>
+        <div class="article-body">
+          <p>Everyone's racing to adopt AI. But most teams are doing it wrong.</p>
+          <p>They're plugging AI into existing workflows — a chatbot here, an autocomplete there — without rethinking <strong>how information flows</strong>. The result? AI that's powerful in isolation but useless in practice.</p>
+
+          <h2>The Context Problem</h2>
+          <p>Here's a simple test: ask your AI assistant to write a project update for your team. It can't. Not because it lacks writing ability, but because it doesn't know:</p>
+          <ul>
+            <li>What project you're working on</li>
+            <li>Who's on your team</li>
+            <li>What happened last week</li>
+            <li>What your communication style looks like</li>
+          </ul>
+          <p>Context isn't a nice-to-have. It's the entire game.</p>
+
+          <h2>How Moxt Solves This</h2>
+          <p>In Moxt, every document, every decision, every workflow lives in a structured context layer. When an AI agent picks up a task, it doesn't start from zero — it starts from <em>your</em> zero. Your brand voice. Your project history. Your team's preferences.</p>
+          <p>This is what makes autonomous work possible. Not smarter models — <strong>smarter context</strong>.</p>
+
+          <h2>The Moat</h2>
+          <p>Companies that invest in organizing their context today will have an insurmountable advantage tomorrow. Their AIs will be faster, more accurate, and more aligned with their goals. Everyone else will still be copy-pasting into chat windows.</p>
+          <p>The moat isn't the model. The moat is the context you feed it.</p>
+        </div>
+      </article>
+
+      <!-- Post 2: Shipping Moxt Canvas -->
+      <article class="article-panel" id="post-2">
+        <div class="article-meta">
+          <span class="article-meta__date">April 10, 2025</span>
+        </div>
+        <h1 class="article-title">Shipping Moxt Canvas: A Visual Workspace for AI Teams</h1>
+        <p class="article-subtitle">How we built a real-time collaborative canvas where humans and AI teammates work side by side.</p>
+        <div class="article-body">
+          <p>When we started building Moxt, we knew that text-based interfaces alone wouldn't cut it. Teams don't just write — they sketch, arrange, connect ideas spatially. That's why we built Moxt Canvas.</p>
+
+          <h2>Why a Canvas?</h2>
+          <p>Traditional project management tools force you into rigid structures — lists, boards, timelines. But creative and strategic work doesn't fit neatly into rows and columns.</p>
+          <p>Canvas gives teams a freeform space where AI agents can participate visually — generating diagrams, organizing research, and even suggesting layout improvements in real time.</p>
+
+          <h2>The Technical Challenge</h2>
+          <p>Building a real-time collaborative canvas that supports both human and AI interaction required solving several hard problems:</p>
+          <ul>
+            <li>Conflict-free replicated data types (CRDTs) for seamless multi-user editing</li>
+            <li>A rendering pipeline that handles thousands of objects at 60fps</li>
+            <li>An AI integration layer that understands spatial relationships</li>
+            <li>Undo/redo across both human and AI actions</li>
+          </ul>
+          <p>We chose to build our own CRDT implementation optimized for spatial data, rather than adapting existing text-focused solutions.</p>
+
+          <h2>What's Next</h2>
+          <p>Canvas is just the beginning. We're working on AI-powered templates, smart grouping, and the ability for AI agents to create entire visual workflows from natural language descriptions.</p>
+        </div>
+      </article>
+
+      <!-- Post 3: Why We Built an Autonomous Workspace -->
+      <article class="article-panel" id="post-3">
+        <div class="article-meta">
+          <span class="article-meta__date">March 18, 2025</span>
+        </div>
+        <h1 class="article-title">Why We Built an Autonomous Workspace</h1>
+        <p class="article-subtitle">AI doesn't lack capability — it lacks an office. Here's why we built Moxt.</p>
+        <div class="article-body">
+          <p>Every AI breakthrough in the last two years has focused on making models smarter. GPT-4, Claude, Gemini — each one more capable than the last. Yet most teams still use AI the same way: as a fancy autocomplete.</p>
+
+          <h2>The Missing Layer</h2>
+          <p>The problem isn't intelligence. It's infrastructure. AI agents today are like brilliant employees who show up to work with no desk, no files, no context about what happened yesterday.</p>
+          <p>They need a workspace — a persistent environment where they can:</p>
+          <ul>
+            <li>Access project history and team knowledge</li>
+            <li>Coordinate with other AI agents and humans</li>
+            <li>Maintain state across tasks and sessions</li>
+            <li>Learn from feedback and outcomes</li>
+          </ul>
+
+          <h2>Our Thesis</h2>
+          <p>We believe the next leap in AI productivity won't come from bigger models. It will come from better <strong>environments</strong>. Moxt is that environment — an autonomous workspace where AI agents don't just respond to prompts, they actively participate in your team's work.</p>
+          <p>The workspace is the multiplier. The model is just the engine.</p>
+
+          <h2>Building for Autonomy</h2>
+          <p>Autonomy doesn't mean AI acting alone. It means AI acting <em>competently</em> — with enough context, memory, and coordination to be genuinely useful without constant hand-holding.</p>
+          <p>That's the workspace we're building. Not a chatbot. Not a copilot. A full teammate.</p>
+        </div>
+      </article>
+
+      <!-- Post 4: Small Teams, Big Leverage -->
+      <article class="article-panel" id="post-4">
+        <div class="article-meta">
+          <span class="article-meta__date">February 24, 2025</span>
+        </div>
+        <h1 class="article-title">Small Teams, Big Leverage: The Case for AI-Native Companies</h1>
+        <p class="article-subtitle">How a 3-person startup ships like a 30-person team using AI teammates in Moxt.</p>
+        <div class="article-body">
+          <p>Meet Meridian — a 3-person startup building developer tools. Six months ago, they were drowning in work: product specs, customer research, marketing copy, bug triage, documentation. The usual story of an early-stage team trying to do everything.</p>
+
+          <h2>The Before</h2>
+          <p>Before Moxt, their workflow looked like this:</p>
+          <ul>
+            <li>Copy-paste context into ChatGPT for every task</li>
+            <li>Manually maintain a shared doc of "things the AI should know"</li>
+            <li>Spend 30% of each day on coordination overhead</li>
+            <li>Constant context-switching between tools</li>
+          </ul>
+          <p>AI was helpful in bursts, but the overhead of setting up context each time made it a net productivity wash.</p>
+
+          <h2>The After</h2>
+          <p>With Moxt, Meridian's AI agents have persistent access to their entire project context. The results after 3 months:</p>
+          <ul>
+            <li>Product documentation generated automatically from design discussions</li>
+            <li>Customer feedback synthesized and routed to the right team member</li>
+            <li>Marketing copy that actually sounds like their brand — first draft, every time</li>
+            <li>Bug reports triaged and prioritized with relevant historical context</li>
+          </ul>
+
+          <h2>The Numbers</h2>
+          <p>Meridian estimates they've gained the equivalent of <strong>8-10 additional team members</strong> in output capacity. Their time-to-ship for new features dropped by 60%. Customer response time went from days to hours.</p>
+          <p>The future belongs to small, leveraged teams. And the lever is context.</p>
+        </div>
+      </article>
+
+    </main>
+  </div>
 
 
   <!-- ═══ Footer ═══ -->
@@ -660,6 +835,27 @@
       });
       overlay.addEventListener('click', closeMenu);
       menu.querySelectorAll('a').forEach(function(a) { a.addEventListener('click', closeMenu); });
+    })();
+
+
+    (function() {
+      var sidebarItems = document.querySelectorAll('.sidebar-item');
+      var panels = document.querySelectorAll('.article-panel');
+
+      sidebarItems.forEach(function(item) {
+        item.addEventListener('click', function(e) {
+          e.preventDefault();
+          var targetId = this.getAttribute('data-target');
+
+          sidebarItems.forEach(function(s) { s.classList.remove('is-active'); });
+          this.classList.add('is-active');
+
+          panels.forEach(function(p) { p.classList.remove('is-visible'); });
+          document.getElementById(targetId).classList.add('is-visible');
+
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+      });
     })();
   </script>
 </body>
