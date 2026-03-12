@@ -540,25 +540,22 @@
     .cm-visual.active { opacity: 1; z-index: 1; pointer-events: auto; }
     .cm-visual__img {
       width: 100%;
-      height: 100%;
       border-radius: 20px;
       overflow: hidden;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: #F7F7F5;
+      background: transparent;
       border: none;
     }
     .cm-visual__img .cm-illus,
     .cm-visual__img svg {
       width: 100%;
-      height: 100%;
       display: block;
     }
     .cm-visual__img img {
       width: 100%;
       height: auto;
-      object-fit: contain;
       mix-blend-mode: multiply;
       border-radius: 24px;
     }
@@ -681,6 +678,12 @@
       flex-shrink: 0;
       height: 224px;
       width: 100%;
+      overflow: hidden;
+    }
+    .coverflow-card__illus img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
     .coverflow-card__body {
       flex: 1;
@@ -735,7 +738,7 @@
       background: #1A1A1A;
     }
     .coverflow-card--dark .coverflow-card__night {
-      display: flex;
+      display: none;
       align-items: center;
       justify-content: flex-end;
       padding-top: 0.25rem;
@@ -1930,13 +1933,13 @@
       <div class="coverflow coverflow--drag">
         <div class="coverflow__stage">
           <div class="coverflow__track">
-          <article class="coverflow-card" data-cf-index="0"><div class="coverflow-card__inner"><div class="coverflow-card__illus" style="background:#B8E6D5"></div><div class="coverflow-card__body"><p class="coverflow-card__time"><span class="coverflow-card__dot"></span>7:00 AM - Morning ops briefing</p><p class="coverflow-card__agent"><strong>AGENT:</strong> Scanned overnight metrics. Flagged 2 anomalies. Drafted exec brief with actions.</p><p class="coverflow-card__you"><strong>YOU:</strong> Still having coffee. The brief is already in your inbox.</p></div></div></article>
-          <article class="coverflow-card" data-cf-index="1"><div class="coverflow-card__inner"><div class="coverflow-card__illus" style="background:#FFE5B4"></div><div class="coverflow-card__body"><p class="coverflow-card__time"><span class="coverflow-card__dot"></span>9:30 AM - Product launch prep</p><p class="coverflow-card__agent"><strong>AGENT:</strong> Built pricing page, wrote email sequences, generated social assets, compiled press kit.</p><p class="coverflow-card__you"><strong>YOU:</strong> Review and approve. One round of feedback, done.</p></div></div></article>
-          <article class="coverflow-card" data-cf-index="2"><div class="coverflow-card__inner"><div class="coverflow-card__illus" style="background:#E8D5F2"></div><div class="coverflow-card__body"><p class="coverflow-card__time"><span class="coverflow-card__dot"></span>11:00 AM - New client onboarding</p><p class="coverflow-card__agent"><strong>AGENT:</strong> Deal closed → auto-triggered: onboarding checklist, welcome deck, project tracker, kick-off agenda.</p><p class="coverflow-card__you"><strong>YOU:</strong> Client gets a polished Day 1 experience. You didn't touch it.</p></div></div></article>
-          <article class="coverflow-card" data-cf-index="3"><div class="coverflow-card__inner"><div class="coverflow-card__illus" style="background:#FFD4D4"></div><div class="coverflow-card__body"><p class="coverflow-card__time"><span class="coverflow-card__dot"></span>2:00 PM - Growth diagnosis</p><p class="coverflow-card__agent"><strong>AGENT:</strong> MRR flat → ran funnel analysis, pulled competitor intel, built retention dashboard, drafted 3 experiments.</p><p class="coverflow-card__you"><strong>YOU:</strong> Walk into the growth meeting with a full plan ready.</p></div></div></article>
-          <article class="coverflow-card" data-cf-index="4"><div class="coverflow-card__inner"><div class="coverflow-card__illus" style="background:#FFF4B8"></div><div class="coverflow-card__body"><p class="coverflow-card__time"><span class="coverflow-card__dot"></span>5:00 PM - Board deck assembly</p><p class="coverflow-card__agent"><strong>AGENT:</strong> Pulled live data from finance, product, sales. Assembled board deck + CEO talking points.</p><p class="coverflow-card__you"><strong>YOU:</strong> Board prep: 2 hours of review instead of 2 weeks.</p></div></div></article>
-          <article class="coverflow-card coverflow-card--dark" data-cf-index="5"><div class="coverflow-card__inner"><div class="coverflow-card__illus" style="background:#2A2A2A"></div><div class="coverflow-card__body"><p class="coverflow-card__time"><span class="coverflow-card__dot"></span>9:00 PM · Investor update</p><p class="coverflow-card__agent"><strong>AGENT:</strong> Pulled portfolio data, built dashboard, drafted LP letter, formatted PDF. Ready to send.</p><p class="coverflow-card__you"><strong>YOU:</strong> You're at dinner. The quarterly update wrote itself.</p><div class="coverflow-card__night"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" stroke="#FFD966" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="17" cy="5" r="0.5" fill="#FFD966"/><circle cx="19" cy="8" r="0.5" fill="#FFD966"/><path d="M15 2l.3 1 1 .3-1 .3L15 4.6l-.3-1-1-.3 1-.3z" fill="#FFD966"/></svg></div></div></div></article>
-          <article class="coverflow-card coverflow-card--dark" data-cf-index="6"><div class="coverflow-card__inner"><div class="coverflow-card__illus" style="background:#1E1E2E"></div><div class="coverflow-card__body"><p class="coverflow-card__time"><span class="coverflow-card__dot"></span>2:00 AM · Competitive intel refresh</p><p class="coverflow-card__agent"><strong>AGENT:</strong> Scans competitor pages, pricing changes, job postings, press mentions. Updates the living brief.</p><p class="coverflow-card__you"><strong>YOU:</strong> You're asleep. Tomorrow the market landscape is already current.</p><div class="coverflow-card__night"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" stroke="#FFD966" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="17" cy="5" r="0.5" fill="#FFD966"/><circle cx="19" cy="8" r="0.5" fill="#FFD966"/><path d="M15 2l.3 1 1 .3-1 .3L15 4.6l-.3-1-1-.3 1-.3z" fill="#FFD966"/></svg></div></div></div></article>
+          <article class="coverflow-card" data-cf-index="0"><div class="coverflow-card__inner"><div class="coverflow-card__illus"><img src="cf-1.png" alt="Morning ops briefing"></div><div class="coverflow-card__body"><p class="coverflow-card__time"><span class="coverflow-card__dot"></span>7:00 AM - Morning ops briefing</p><p class="coverflow-card__agent"><strong>AGENT:</strong> Scanned overnight metrics. Flagged 2 anomalies. Drafted exec brief with actions.</p><p class="coverflow-card__you"><strong>YOU:</strong> Still having coffee. The brief is already in your inbox.</p></div></div></article>
+          <article class="coverflow-card" data-cf-index="1"><div class="coverflow-card__inner"><div class="coverflow-card__illus"><img src="cf-2.png" alt="Product launch prep"></div><div class="coverflow-card__body"><p class="coverflow-card__time"><span class="coverflow-card__dot"></span>9:30 AM - Product launch prep</p><p class="coverflow-card__agent"><strong>AGENT:</strong> Built pricing page, wrote email sequences, generated social assets, compiled press kit.</p><p class="coverflow-card__you"><strong>YOU:</strong> Review and approve. One round of feedback, done.</p></div></div></article>
+          <article class="coverflow-card" data-cf-index="2"><div class="coverflow-card__inner"><div class="coverflow-card__illus"><img src="cf-3.png" alt="New client onboarding"></div><div class="coverflow-card__body"><p class="coverflow-card__time"><span class="coverflow-card__dot"></span>11:00 AM - New client onboarding</p><p class="coverflow-card__agent"><strong>AGENT:</strong> Deal closed → auto-triggered: onboarding checklist, welcome deck, project tracker, kick-off agenda.</p><p class="coverflow-card__you"><strong>YOU:</strong> Client gets a polished Day 1 experience. You didn't touch it.</p></div></div></article>
+          <article class="coverflow-card" data-cf-index="3"><div class="coverflow-card__inner"><div class="coverflow-card__illus"><img src="cf-4.png" alt="Growth diagnosis"></div><div class="coverflow-card__body"><p class="coverflow-card__time"><span class="coverflow-card__dot"></span>2:00 PM - Growth diagnosis</p><p class="coverflow-card__agent"><strong>AGENT:</strong> MRR flat → ran funnel analysis, pulled competitor intel, built retention dashboard, drafted 3 experiments.</p><p class="coverflow-card__you"><strong>YOU:</strong> Walk into the growth meeting with a full plan ready.</p></div></div></article>
+          <article class="coverflow-card" data-cf-index="4"><div class="coverflow-card__inner"><div class="coverflow-card__illus"><img src="cf-5.png" alt="Board deck assembly"></div><div class="coverflow-card__body"><p class="coverflow-card__time"><span class="coverflow-card__dot"></span>5:00 PM - Board deck assembly</p><p class="coverflow-card__agent"><strong>AGENT:</strong> Pulled live data from finance, product, sales. Assembled board deck + CEO talking points.</p><p class="coverflow-card__you"><strong>YOU:</strong> Board prep: 2 hours of review instead of 2 weeks.</p></div></div></article>
+          <article class="coverflow-card coverflow-card--dark" data-cf-index="5"><div class="coverflow-card__inner"><div class="coverflow-card__illus"><img src="cf-6.png" alt="Investor update"></div><div class="coverflow-card__body"><p class="coverflow-card__time"><span class="coverflow-card__dot"></span>9:00 PM · Investor update</p><p class="coverflow-card__agent"><strong>AGENT:</strong> Pulled portfolio data, built dashboard, drafted LP letter, formatted PDF. Ready to send.</p><p class="coverflow-card__you"><strong>YOU:</strong> You're at dinner. The quarterly update wrote itself.</p><div class="coverflow-card__night"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" stroke="#FFD966" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="17" cy="5" r="0.5" fill="#FFD966"/><circle cx="19" cy="8" r="0.5" fill="#FFD966"/><path d="M15 2l.3 1 1 .3-1 .3L15 4.6l-.3-1-1-.3 1-.3z" fill="#FFD966"/></svg></div></div></div></article>
+          <article class="coverflow-card coverflow-card--dark" data-cf-index="6"><div class="coverflow-card__inner"><div class="coverflow-card__illus"><img src="cf-7.png" alt="Competitive intel refresh"></div><div class="coverflow-card__body"><p class="coverflow-card__time"><span class="coverflow-card__dot"></span>2:00 AM · Competitive intel refresh</p><p class="coverflow-card__agent"><strong>AGENT:</strong> Scans competitor pages, pricing changes, job postings, press mentions. Updates the living brief.</p><p class="coverflow-card__you"><strong>YOU:</strong> You're asleep. Tomorrow the market landscape is already current.</p><div class="coverflow-card__night"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" stroke="#FFD966" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="17" cy="5" r="0.5" fill="#FFD966"/><circle cx="19" cy="8" r="0.5" fill="#FFD966"/><path d="M15 2l.3 1 1 .3-1 .3L15 4.6l-.3-1-1-.3 1-.3z" fill="#FFD966"/></svg></div></div></div></article>
           <article class="coverflow-card coverflow-card--cycle" data-cf-index="7"><div class="coverflow-card__inner"><div class="coverflow-card__illus coverflow-card__illus--gray"><span class="coverflow-card__cycle-arrow">→</span><span class="coverflow-card__cycle-time">7:00 AM</span><p class="coverflow-card__cycle">The cycle continues</p></div></div></article>
           </div>
         </div>
@@ -2092,7 +2095,7 @@
         <!-- Notion 产品 icon：黑 N -->
         <div class="conv-icon"><div class="conv-icon__box"><svg viewBox="0 0 24 24" fill="#000" xmlns="http://www.w3.org/2000/svg"><path d="M4.5 3A1.5 1.5 0 003 4.5v15A1.5 1.5 0 004.5 21h15a1.5 1.5 0 001.5-1.5v-15A1.5 1.5 0 0019.5 3H4.5zM8 6.5l3 3 2-4 3 7.5v5H8v-5l2-3-2-4V6.5z"/></svg></div><span class="conv-icon__label">Notion</span></div>
         <!-- Slack 产品 icon：四色块 -->
-        <div class="conv-icon"><div class="conv-icon__box"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M6 2a2 2 0 012 2v2H4a2 2 0 012-2z" fill="#E01E5A"/><path d="M20 6a2 2 0 012 2v2h-4V8a2 2 0 012-2z" fill="#36C5F0"/><path d="M18 20a2 2 0 002-2v-2h-4v2a2 2 0 002 2z" fill="#2EB67D"/><path d="M4 18a2 2 0 01-2-2v-2h4v2a2 2 0 01-2 2z" fill="#ECB22E"/></svg></div><span class="conv-icon__label">Slack</span></div>
+        <div class="conv-icon"><div class="conv-icon__box"><svg viewBox="0 0 124 124" xmlns="http://www.w3.org/2000/svg"><path d="M26.4 78.9c0 7.2-5.8 13-13 13s-13-5.8-13-13 5.8-13 13-13h13v13zm6.5 0c0-7.2 5.8-13 13-13s13 5.8 13 13v32.5c0 7.2-5.8 13-13 13s-13-5.8-13-13V78.9z" fill="#E01E5A"/><path d="M45.9 26.4c-7.2 0-13-5.8-13-13s5.8-13 13-13 13 5.8 13 13v13h-13zm0 6.5c7.2 0 13 5.8 13 13s-5.8 13-13 13H13.4c-7.2 0-13-5.8-13-13s5.8-13 13-13h32.5z" fill="#36C5F0"/><path d="M98 45.9c0-7.2 5.8-13 13-13s13 5.8 13 13-5.8 13-13 13H98v-13zm-6.5 0c0 7.2-5.8 13-13 13s-13-5.8-13-13V13.4c0-7.2 5.8-13 13-13s13 5.8 13 13v32.5z" fill="#2EB67D"/><path d="M78.5 98c7.2 0 13 5.8 13 13s-5.8 13-13 13-13-5.8-13-13V98h13zm0-6.5c-7.2 0-13-5.8-13-13s5.8-13 13-13h32.5c7.2 0 13 5.8 13 13s-5.8 13-13 13H78.5z" fill="#ECB22E"/></svg></div><span class="conv-icon__label">Slack</span></div>
         <!-- Spreadsheets 产品 icon：绿色表格 -->
         <div class="conv-icon"><div class="conv-icon__box"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 4h16a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2z" fill="#0F9D58"/><path d="M4 10h8v2H4v-2zm0 4h8v2H4v-2zm10-4h6v2h-6v-2zm0 4h6v2h-6v-2z" fill="rgba(255,255,255,0.9)"/></svg></div><span class="conv-icon__label">Spreadsheets</span></div>
         <!-- Local Files 产品 icon：文件夹 -->
