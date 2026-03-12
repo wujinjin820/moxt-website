@@ -762,11 +762,11 @@
       color: #D0D0CB;
     }
     .coverflow-card--cycle .coverflow-card__inner {
-      background: #F7F7F5;
+      background: #1A1A1A;
       cursor: pointer;
     }
     .coverflow-card--cycle .coverflow-card__illus {
-      background: #F7F7F5 !important;
+      background: #1A1A1A !important;
       display: flex;
       flex-direction: column;
       align-items: flex-start;
@@ -783,16 +783,19 @@
       letter-spacing: -0.02em;
       color: var(--fg);
     }
+    .coverflow-card--cycle .coverflow-card__cycle-time {
+      color: #F0F0ED;
+    }
     .coverflow-card--cycle .coverflow-card__cycle-arrow {
       font-size: 2rem;
-      color: var(--fg);
+      color: #F0F0ED;
       line-height: 1;
       display: block;
       margin-bottom: 1rem;
     }
     .coverflow-card--cycle .coverflow-card__cycle {
       font-size: 0.9375rem;
-      color: var(--fg-mid);
+      color: #A0A09A;
       line-height: 1.5;
       margin: 0;
     }
@@ -1056,7 +1059,7 @@
     }
 
     /* ════════════════════════════════════════════════════
-       COMPARE — Not better. Just different. 4 浮动呼吸卡片
+       COMPARE — Not better. Just different 4 浮动呼吸卡片
     ════════════════════════════════════════════════════ */
     .compare-section {
       background: var(--white);
@@ -1308,7 +1311,7 @@
     .m-conte {
       overflow: hidden;
       min-width: 0;
-      color: var(--fg-muted);
+      color: #C0C0BB;
     }
     .m-sp {
       width: 0.25em;
@@ -2016,12 +2019,12 @@
 
 
   <!-- ══════════════════════════════════════════
-       COMPARE — Not better. Just different.
+       COMPARE — Not better. Just different
   ══════════════════════════════════════════ -->
   <section class="compare-section" id="compare">
     <div class="compare__inner">
       <div class="compare__head">
-        <h2 class="compare__title">Not better. Just different.</h2>
+        <h2 class="compare__title">Not better. Just different</h2>
         <p class="compare__sub">You know the best. Now meet what's next.</p>
       </div>
       <div class="compare__grid">
@@ -2029,7 +2032,7 @@
           <div class="compare-card__content">
             <h3 class="compare-card__title">OpenClaw</h3>
             <p class="compare-card__desc">A powerful personal agent with its own persistent environment. The future of individual productivity.</p>
-            <div class="compare-card__illus"><img src="compare-openclaw.png" alt="OpenClaw illustration" style="object-position: center 30%"></div>
+            <div class="compare-card__illus"><img src="compare-openclaw.png" alt="OpenClaw illustration" style="object-position: center 15%"></div>
             <p class="compare-card__limit">Built for one person. Your agents can't collaborate, share context, or work as a team.</p>
           </div>
           <div class="compare-card__hover">
@@ -2051,7 +2054,7 @@
           <div class="compare-card__content">
             <h3 class="compare-card__title">Notion</h3>
             <p class="compare-card__desc">Beautiful docs. Rich collaboration. The workspace that defined how modern teams organize knowledge.</p>
-            <div class="compare-card__illus"><img src="compare-notion.png" alt="Notion illustration"></div>
+            <div class="compare-card__illus"><img src="compare-notion.png" alt="Notion illustration" style="transform: scale(1.2)"></div>
             <p class="compare-card__limit">Designed for humans to read and write. AI is bolted on, not native. Your agents can't truly live here.</p>
           </div>
           <div class="compare-card__hover">
@@ -2121,7 +2124,7 @@
               <path d="M0 0l.01 25.88 22.54 12.93V12.9L0 0z" transform="translate(22.2 36.83)" fill="#29C16A"/>
             </svg>
           </div>
-          <p class="conv-moxt-text"><span class="m-mo">Mo</span><span class="m-re">re</span><span class="m-sp"> </span><span class="m-conte">Conte</span><span class="m-xt">xt.</span></p>
+          <p class="conv-moxt-text"><span class="m-mo">Mo</span><span class="m-re">re</span><span class="m-sp"> </span><span class="m-conte">Conte</span><span class="m-xt">xt</span></p>
         </div>
         <p class="conv-cta-sub">The workspace where your AI Agents live, learn, and build — together.</p>
         <a href="#" class="btn btn-green">Get Started Free →</a>
@@ -2375,7 +2378,7 @@
 
 
   /**
-   * Compare — Not better. Just different. 浮动呼吸卡片入场
+   * Compare — Not better. Just different 浮动呼吸卡片入场
    */
   const Compare = (() => ({
     init() {
