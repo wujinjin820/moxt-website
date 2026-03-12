@@ -68,7 +68,8 @@
        RESET
     ════════════════════════════════════════════════════ */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: auto; }
+    html { scroll-behavior: auto; scrollbar-width: none; }
+    html::-webkit-scrollbar { display: none; }
     body {
       background: var(--white);
       color: var(--fg);
@@ -83,8 +84,6 @@
     a { color: inherit; text-decoration: none; }
     img { display: block; max-width: 100%; }
     ::selection { background: var(--green); color: #fff; }
-    ::-webkit-scrollbar { width: 2px; }
-    ::-webkit-scrollbar-thumb { background: var(--green); }
 
     /* ════════════════════════════════════════════════════
        LAYOUT
@@ -388,7 +387,7 @@
       line-height: 1.0;
       letter-spacing: -0.03em;
       color: var(--fg);
-      margin-bottom: 4rem;
+      margin-bottom: 3rem;
       opacity: 0;
       transform: translateY(24px);
     }
@@ -416,8 +415,9 @@
       font-size: 1.375rem;
       line-height: 1.08;
       letter-spacing: -0.03em;
+      height: 26px;
       color: #0a0a0a;
-      margin-top: 2.5rem;
+      margin-top: 1.5rem;
       margin-bottom: 1.5rem;
       opacity: 0;
       transform: translateY(20px);
@@ -439,8 +439,8 @@
        CONTEXT IN. MAGIC OUT. — 侧边粘性滚动
     ════════════════════════════════════════════════════ */
     .context-magic {
-      background: var(--gray);
-      padding: 6rem 2.5rem 8rem;
+      background: #F7F7F5;
+      padding: 6rem 2.5rem 4rem;
     }
     .context-magic__inner { max-width: 1440px; margin: 0 auto; }
     .context-magic__title {
@@ -468,13 +468,13 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
-      padding-bottom: 2rem;
+      padding-bottom: 1rem;
       max-width: 30rem;
     }
     .context-magic__right {
       position: sticky;
-      top: 15vh;
-      height: 70vh;
+      top: 7.5vh;
+      height: 85vh;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -493,7 +493,7 @@
       line-height: 1.1;
       letter-spacing: -0.025em;
       color: #0a0a0a;
-      margin-bottom: 1.25rem;
+      margin-bottom: calc(1.25rem + 16px);
     }
     /* 层级2：内容 — 加粗小标（hook）+ 正文 */
     .cm-step__hook {
@@ -502,7 +502,7 @@
       font-weight: 600;
       color: #0a0a0a;
       line-height: 1.55;
-      margin-bottom: 0.75rem;
+      margin-bottom: calc(0.75rem + 16px);
       max-width: 30rem;
       hyphens: none;
     }
@@ -512,7 +512,7 @@
       line-height: 1.8;
       color: #0a0a0a;
       max-width: 30rem;
-      margin-bottom: 1.75rem;
+      margin-bottom: calc(0.75rem + 16px);
       hyphens: none;
     }
     /* 层级3：绿色强调文字 */
@@ -520,7 +520,7 @@
       display: inline-block;
       font-family: var(--serif);
       font-size: 18px;
-      font-weight: 500;
+      font-weight: 700;
       font-style: italic;
       color: #1a7d3a;
       hyphens: none;
@@ -547,9 +547,7 @@
       align-items: center;
       justify-content: center;
     }
-    .cm-visual[data-cm-visual="1"] .cm-visual__img { background: #F0EFEB; border: 1px solid #D4D2CE; }
-    .cm-visual[data-cm-visual="2"] .cm-visual__img { background: #EDECEA; border: 1px solid #C5C7C3; }
-    .cm-visual[data-cm-visual="3"] .cm-visual__img { background: #F2F1ED; border: 1px solid #CFCDC8; }
+    .cm-visual__img { background: #F7F7F5; }
     .cm-visual__img .cm-illus,
     .cm-visual__img svg {
       width: 100%;
@@ -557,9 +555,9 @@
       display: block;
     }
     .cm-visual__img img {
-      width: 100%; height: 100%;
+      width: 100%;
+      height: auto;
       object-fit: contain;
-      mix-blend-mode: multiply;
     }
     @media (max-width: 900px) {
       .context-magic__wrap {
@@ -1073,16 +1071,6 @@
       opacity: 0;
       transition: opacity 0.35s ease;
     }
-    .compare-card__hover-title {
-      font-family: var(--serif);
-      font-size: 1.75rem;
-      font-weight: 600;
-      color: #fff;
-      margin-bottom: 1rem;
-      line-height: 1.2;
-      max-width: 260px;
-      text-align: left;
-    }
     .compare-card__hover-text {
       font-family: var(--serif);
       font-size: 18px;
@@ -1133,11 +1121,6 @@
       line-height: 1.5;
       margin-bottom: 0.75rem;
     }
-    .compare-card__moxt {
-      font-size: 0.8125rem;
-      color: #111;
-      line-height: 1.5;
-    }
     @media (max-width: 1024px) {
       .compare__grid { grid-template-columns: repeat(2, 1fr); }
     }
@@ -1163,6 +1146,8 @@
       justify-content: center;
       padding: 2rem;
       box-sizing: border-box;
+      transform: translateZ(0);
+      backface-visibility: hidden;
     }
     .conv-icons-layer {
       position: absolute;
@@ -1221,9 +1206,7 @@
       background: radial-gradient(circle, rgba(41,193,106,0.65) 0%, rgba(41,193,106,0.12) 45%, transparent 72%);
       filter: blur(6px);
     }
-    .conv-phrase-1,
-    .conv-phrase-2,
-    .conv-cta-wrap {
+    .conv-phrase-2 {
       position: absolute;
       top: 0; bottom: 0;
       left: 0; right: 0;
@@ -1235,6 +1218,14 @@
       padding: 2rem;
       pointer-events: none;
       opacity: 0;
+      gap: 2rem;
+    }
+    .conv-phrase-2 .btn-green { pointer-events: all; }
+    .conv-brand-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
     }
     .conv-headline {
       font-family: var(--serif);
@@ -1254,55 +1245,42 @@
       font-size: clamp(3rem, 8vw, 7rem);
       font-weight: 700;
       color: var(--fg);
-      line-height: 1.2;
+      line-height: 1;
       letter-spacing: -0.04em;
       white-space: nowrap;
+      /* 光学微调：Lora 衬线视觉中心略低，上移 2px 与 logo 对齐 */
+      margin-top: -2px;
     }
     .conv-moxt-text span {
       display: inline-block;
-      vertical-align: baseline;
+      vertical-align: top;
     }
     .m-re,
     .m-conte {
       overflow: hidden;
+      min-width: 0;
       color: var(--fg-muted);
     }
     .m-sp {
       width: 0.25em;
       display: inline-block;
       vertical-align: baseline;
-    }
-    .conv-cta-wrap {
-      gap: 2rem;
-      pointer-events: none;
-    }
-    .conv-cta-wrap .btn-green {
-      pointer-events: all;
-      height: 56px;
-      padding: 0 2rem;
-      font-size: 1rem;
-    }
-    .conv-cta-brand {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 1rem;
+      overflow: hidden;
     }
     .conv-cta-logo {
       flex-shrink: 0;
+      overflow: hidden;
+      padding-left: 6px;
     }
     .conv-cta-logo svg {
-      height: 80px;
+      height: 112px;
       width: auto;
       display: block;
     }
-    .conv-cta-moxt {
-      font-family: var(--serif);
-      font-size: clamp(2.5rem, 6vw, 4.5rem);
-      font-weight: 700;
-      color: var(--fg);
-      letter-spacing: -0.04em;
-      line-height: 1;
+    .conv-phrase-2 .btn-green {
+      height: 56px;
+      padding: 0 2rem;
+      font-size: 1rem;
     }
     .conv-cta-sub {
       font-size: 1.125rem;
@@ -1459,6 +1437,7 @@
     .footer__cols {
       display: flex;
       gap: 4rem;
+      padding-top: calc(28px + 1.25rem);
     }
 
     .footer__col h4 {
@@ -1671,10 +1650,9 @@
       .conv-glow { width: 200px; height: 200px; }
       .conv-headline { font-size: clamp(1.5rem, 6vw, 2.5rem); }
       .conv-moxt-text { font-size: clamp(2rem, 10vw, 4rem); }
-      .conv-cta-logo svg { height: 48px; }
-      .conv-cta-moxt { font-size: clamp(1.75rem, 8vw, 3rem); }
+      .conv-cta-logo svg { height: 72px; }
       .conv-cta-sub { font-size: 0.9375rem; max-width: 90%; }
-      .conv-cta-wrap .btn-green {
+      .conv-phrase-2 .btn-green {
         height: 48px;
         padding: 0 1.5rem;
         font-size: 0.9375rem;
@@ -1687,7 +1665,7 @@
         gap: 2rem;
       }
       .footer__tagline { font-size: 0.9375rem; max-width: 100%; }
-      .footer__cols { gap: 2rem; }
+      .footer__cols { gap: 2rem; padding-top: 0; }
       .footer__col a { font-size: 0.9375rem; }
       .footer__copy { font-size: 0.8125rem; }
     }
@@ -1774,8 +1752,8 @@
       <div class="hero__left">
 
         <h1 class="hero__h1" aria-label="Where your agents live and work.">
-          <span class="h1-line"><span class="h1-line-inner">Where your <em>agents</em></span></span>
-          <span class="h1-line"><span class="h1-line-inner">live <em>and work.</em></span></span>
+          <span class="h1-line"><span class="h1-line-inner">Where your agents</span></span>
+          <span class="h1-line"><span class="h1-line-inner"><em>live and work.</em></span></span>
         </h1>
 
         <div class="hero__foot">
@@ -1798,7 +1776,7 @@
       <!-- 右栏：配图 -->
       <div class="hero__right">
         <img
-          src="hero-illustration.svg"
+          src="hero-920d6352-a96a-4663-844f-34043e75f75c.png"
           alt="AI Teammates illustration"
           class="hero__illus"
           draggable="false"
@@ -1830,7 +1808,6 @@
       </p>
 
       <p class="m-climax" data-mclimax>Moxt is that place.</p>
-      <span class="m-author" data-mauthor>— Written by Moxt</span>
     </div>
   </section>
 
@@ -1868,78 +1845,17 @@
           <div class="cm-visuals">
           <div class="cm-visual active" data-cm-visual="1">
             <div class="cm-visual__img">
-              <svg class="cm-illus" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <rect x="80" y="60" width="240" height="280" rx="12" stroke="#212121" stroke-width="1.5" fill="#F8F8F6"/>
-                <rect x="100" y="90" width="200" height="24" rx="4" fill="#E5E3DF"/>
-                <rect x="100" y="128" width="160" height="18" rx="3" fill="#E8E6E2"/>
-                <rect x="100" y="156" width="180" height="18" rx="3" fill="#E8E6E2"/>
-                <circle cx="320" cy="100" r="20" stroke="#29C16A" stroke-width="1.5" fill="none"/>
-                <path d="M308 100l8 8 16-16" stroke="#29C16A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-                <rect x="100" y="200" width="80" height="56" rx="8" stroke="#3A3A38" stroke-width="1.2" fill="none"/>
-                <path d="M120 228v-12h20v12M130 216v-8" stroke="#3A3A38" stroke-width="1" stroke-linecap="round"/>
-                <rect x="200" y="200" width="80" height="56" rx="8" stroke="#3A3A38" stroke-width="1.2" fill="none"/>
-                <circle cx="240" cy="228" r="8" stroke="#3A3A38" stroke-width="1.2" fill="none"/>
-                <rect x="300" y="200" width="80" height="56" rx="8" stroke="#3A3A38" stroke-width="1.2" fill="none"/>
-                <path d="M320 224l6 6 12-12" stroke="#29C16A" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-                <text x="120" y="280" font-family="Inter, sans-serif" font-size="11" font-weight="500" fill="#8A8A85">Files</text>
-                <text x="220" y="280" font-family="Inter, sans-serif" font-size="11" font-weight="500" fill="#8A8A85">Memory</text>
-                <text x="308" y="280" font-family="Inter, sans-serif" font-size="11" font-weight="500" fill="#8A8A85">Tools</text>
-              </svg>
+              <img src="m1-4f7ae432-5efb-43a0-aaf7-483383052501.png" alt="Files, Memory, Tools" class="cm-illus" />
             </div>
           </div>
           <div class="cm-visual" data-cm-visual="2">
             <div class="cm-visual__img">
-              <svg class="cm-illus" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <circle cx="200" cy="200" r="70" stroke="#212121" stroke-width="1.5" fill="#F8F8F6"/>
-                <circle cx="200" cy="200" r="42" stroke="#29C16A" stroke-width="1.5" fill="rgba(41,193,106,0.08)"/>
-                <circle cx="200" cy="158" r="14" fill="#29C16A"/>
-                <circle cx="242" cy="218" r="14" fill="#212121"/>
-                <circle cx="158" cy="218" r="14" fill="#212121"/>
-                <circle cx="200" cy="278" r="14" fill="#212121"/>
-                <circle cx="128" cy="170" r="12" stroke="#3A3A38" stroke-width="1.2" fill="#F3F3F0"/>
-                <circle cx="272" cy="170" r="12" stroke="#3A3A38" stroke-width="1.2" fill="#F3F3F0"/>
-                <circle cx="128" cy="230" r="12" stroke="#3A3A38" stroke-width="1.2" fill="#F3F3F0"/>
-                <circle cx="272" cy="230" r="12" stroke="#3A3A38" stroke-width="1.2" fill="#F3F3F0"/>
-                <path d="M186 172l14-14M214 172l-14-14M186 228l14 14M214 228l-14 14" stroke="#C8C8C3" stroke-width="1" stroke-dasharray="4 3"/>
-                <path d="M200 144v20M200 236v20M156 200h20M244 200h20" stroke="#29C16A" stroke-width="1.2" stroke-linecap="round" opacity="0.8"/>
-              </svg>
+              <img src="m2-de0d2286-e710-4d9e-8b8f-e8b9050f6725.png" alt="Shared memory across your whole team" class="cm-illus" />
             </div>
           </div>
           <div class="cm-visual" data-cm-visual="3">
             <div class="cm-visual__img">
-              <svg class="cm-illus" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <g opacity="0.5">
-                  <circle cx="100" cy="140" r="18" stroke="#3A3A38" stroke-width="1.2" fill="#F8F8F6"/>
-                  <circle cx="160" cy="140" r="18" stroke="#3A3A38" stroke-width="1.2" fill="#F8F8F6"/>
-                  <circle cx="100" cy="200" r="18" stroke="#3A3A38" stroke-width="1.2" fill="#F8F8F6"/>
-                  <circle cx="160" cy="200" r="18" stroke="#3A3A38" stroke-width="1.2" fill="#F8F8F6"/>
-                  <circle cx="130" cy="170" r="18" stroke="#3A3A38" stroke-width="1.2" fill="#F8F8F6"/>
-                </g>
-                <path d="M178 170h44" stroke="#29C16A" stroke-width="2" stroke-linecap="round"/>
-                <path d="M200 158v24" stroke="#29C16A" stroke-width="2" stroke-linecap="round"/>
-                <polygon points="248,170 238,164 238,176" fill="#29C16A"/>
-                <g>
-                  <circle cx="300" cy="120" r="14" stroke="#212121" stroke-width="1.2" fill="#F8F8F6"/>
-                  <circle cx="340" cy="120" r="14" stroke="#212121" stroke-width="1.2" fill="#F8F8F6"/>
-                  <circle cx="380" cy="120" r="14" stroke="#212121" stroke-width="1.2" fill="#F8F8F6"/>
-                  <circle cx="280" cy="155" r="14" stroke="#212121" stroke-width="1.2" fill="#F8F8F6"/>
-                  <circle cx="320" cy="155" r="14" stroke="#29C16A" stroke-width="1.2" fill="rgba(41,193,106,0.12)"/>
-                  <circle cx="360" cy="155" r="14" stroke="#212121" stroke-width="1.2" fill="#F8F8F6"/>
-                  <circle cx="300" cy="190" r="14" stroke="#212121" stroke-width="1.2" fill="#F8F8F6"/>
-                  <circle cx="340" cy="190" r="14" stroke="#212121" stroke-width="1.2" fill="#F8F8F6"/>
-                  <circle cx="380" cy="190" r="14" stroke="#212121" stroke-width="1.2" fill="#F8F8F6"/>
-                  <circle cx="260" cy="225" r="14" stroke="#212121" stroke-width="1.2" fill="#F8F8F6"/>
-                  <circle cx="300" cy="225" r="14" stroke="#212121" stroke-width="1.2" fill="#F8F8F6"/>
-                  <circle cx="340" cy="225" r="14" stroke="#212121" stroke-width="1.2" fill="#F8F8F6"/>
-                  <circle cx="380" cy="225" r="14" stroke="#212121" stroke-width="1.2" fill="#F8F8F6"/>
-                  <circle cx="320" cy="260" r="14" stroke="#212121" stroke-width="1.2" fill="#F8F8F6"/>
-                  <circle cx="360" cy="260" r="14" stroke="#212121" stroke-width="1.2" fill="#F8F8F6"/>
-                </g>
-                <text x="200" y="310" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#212121">5</text>
-                <text x="200" y="328" font-family="Inter, sans-serif" font-size="11" fill="#8A8A85">people</text>
-                <text x="318" y="318" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#29C16A">× 50</text>
-                <text x="318" y="336" font-family="Inter, sans-serif" font-size="11" fill="#8A8A85">output</text>
-              </svg>
+              <img src="m3-ec152607-63e7-4c0a-83a6-db5fecce4286.png" alt="Your team × 100" class="cm-illus" />
             </div>
           </div>
           </div><!-- /cm-visuals -->
@@ -1965,16 +1881,14 @@
           <article class="coverflow-card" data-cf-index="2"><div class="coverflow-card__inner"><div class="coverflow-card__illus" style="background:#E8D5F2"></div><div class="coverflow-card__body"><p class="coverflow-card__time"><span class="coverflow-card__dot"></span>11:00 AM - New client onboarding</p><p class="coverflow-card__agent"><strong>AGENT:</strong> Deal closed → auto-triggered: onboarding checklist, welcome deck, project tracker, kick-off agenda.</p><p class="coverflow-card__you"><strong>YOU:</strong> Client gets a polished Day 1 experience. You didn't touch it.</p></div></div></article>
           <article class="coverflow-card" data-cf-index="3"><div class="coverflow-card__inner"><div class="coverflow-card__illus" style="background:#FFD4D4"></div><div class="coverflow-card__body"><p class="coverflow-card__time"><span class="coverflow-card__dot"></span>2:00 PM - Growth diagnosis</p><p class="coverflow-card__agent"><strong>AGENT:</strong> MRR flat → ran funnel analysis, pulled competitor intel, built retention dashboard, drafted 3 experiments.</p><p class="coverflow-card__you"><strong>YOU:</strong> Walk into the growth meeting with a full plan ready.</p></div></div></article>
           <article class="coverflow-card" data-cf-index="4"><div class="coverflow-card__inner"><div class="coverflow-card__illus" style="background:#FFF4B8"></div><div class="coverflow-card__body"><p class="coverflow-card__time"><span class="coverflow-card__dot"></span>5:00 PM - Board deck assembly</p><p class="coverflow-card__agent"><strong>AGENT:</strong> Pulled live data from finance, product, sales. Assembled board deck + CEO talking points.</p><p class="coverflow-card__you"><strong>YOU:</strong> Board prep: 2 hours of review instead of 2 weeks.</p></div></div></article>
-          <article class="coverflow-card" data-cf-index="5"><div class="coverflow-card__inner"><div class="coverflow-card__illus" style="background:#E8D5F2"></div><div class="coverflow-card__body"><p class="coverflow-card__time"><span class="coverflow-card__dot"></span>2:00 AM - Competitive intel refresh</p><p class="coverflow-card__agent"><strong>AGENT:</strong> Scans competitor pages, pricing changes, job postings, press mentions. Updates the living brief.</p><p class="coverflow-card__you"><strong>YOU:</strong> You're asleep. Tomorrow the market landscape is already current.</p></div></div></article>
-          <article class="coverflow-card coverflow-card--cycle" data-cf-index="6"><div class="coverflow-card__inner"><div class="coverflow-card__illus coverflow-card__illus--gray"><span class="coverflow-card__cycle-arrow">→</span><span class="coverflow-card__cycle-time">7:00 AM</span><p class="coverflow-card__cycle">The cycle continues</p></div></div></article>
+          <article class="coverflow-card coverflow-card--cycle" data-cf-index="5"><div class="coverflow-card__inner"><div class="coverflow-card__illus coverflow-card__illus--gray"><span class="coverflow-card__cycle-arrow">→</span><span class="coverflow-card__cycle-time">7:00 AM</span><p class="coverflow-card__cycle">The cycle continues</p></div></div></article>
           <article class="coverflow-card" data-cf-index="7"><div class="coverflow-card__inner"><div class="coverflow-card__illus" style="background:#F5E6F0"></div><div class="coverflow-card__body"><p class="coverflow-card__time"><span class="coverflow-card__dot"></span>9:00 PM - Investor update</p><p class="coverflow-card__agent"><strong>AGENT:</strong> Pulled portfolio data, built dashboard, drafted LP letter, formatted PDF. Ready to send.</p><p class="coverflow-card__you"><strong>YOU:</strong> You're at dinner. The quarterly update wrote itself.</p></div></div></article>
           <article class="coverflow-card" data-cf-index="8"><div class="coverflow-card__inner"><div class="coverflow-card__illus" style="background:#B8E6D5"></div><div class="coverflow-card__body"><p class="coverflow-card__time"><span class="coverflow-card__dot"></span>7:00 AM - Morning ops briefing</p><p class="coverflow-card__agent"><strong>AGENT:</strong> Scanned overnight metrics. Flagged 2 anomalies. Drafted exec brief with actions.</p><p class="coverflow-card__you"><strong>YOU:</strong> Still having coffee. The brief is already in your inbox.</p></div></div></article>
           <article class="coverflow-card" data-cf-index="9"><div class="coverflow-card__inner"><div class="coverflow-card__illus" style="background:#FFE5B4"></div><div class="coverflow-card__body"><p class="coverflow-card__time"><span class="coverflow-card__dot"></span>9:30 AM - Product launch prep</p><p class="coverflow-card__agent"><strong>AGENT:</strong> Built pricing page, wrote email sequences, generated social assets, compiled press kit.</p><p class="coverflow-card__you"><strong>YOU:</strong> Review and approve. One round of feedback, done.</p></div></div></article>
           <article class="coverflow-card" data-cf-index="10"><div class="coverflow-card__inner"><div class="coverflow-card__illus" style="background:#E8D5F2"></div><div class="coverflow-card__body"><p class="coverflow-card__time"><span class="coverflow-card__dot"></span>11:00 AM - New client onboarding</p><p class="coverflow-card__agent"><strong>AGENT:</strong> Deal closed → auto-triggered: onboarding checklist, welcome deck, project tracker, kick-off agenda.</p><p class="coverflow-card__you"><strong>YOU:</strong> Client gets a polished Day 1 experience. You didn't touch it.</p></div></div></article>
           <article class="coverflow-card" data-cf-index="11"><div class="coverflow-card__inner"><div class="coverflow-card__illus" style="background:#FFD4D4"></div><div class="coverflow-card__body"><p class="coverflow-card__time"><span class="coverflow-card__dot"></span>2:00 PM - Growth diagnosis</p><p class="coverflow-card__agent"><strong>AGENT:</strong> MRR flat → ran funnel analysis, pulled competitor intel, built retention dashboard, drafted 3 experiments.</p><p class="coverflow-card__you"><strong>YOU:</strong> Walk into the growth meeting with a full plan ready.</p></div></div></article>
           <article class="coverflow-card" data-cf-index="12"><div class="coverflow-card__inner"><div class="coverflow-card__illus" style="background:#FFF4B8"></div><div class="coverflow-card__body"><p class="coverflow-card__time"><span class="coverflow-card__dot"></span>5:00 PM - Board deck assembly</p><p class="coverflow-card__agent"><strong>AGENT:</strong> Pulled live data from finance, product, sales. Assembled board deck + CEO talking points.</p><p class="coverflow-card__you"><strong>YOU:</strong> Board prep: 2 hours of review instead of 2 weeks.</p></div></div></article>
-          <article class="coverflow-card" data-cf-index="13"><div class="coverflow-card__inner"><div class="coverflow-card__illus" style="background:#E8D5F2"></div><div class="coverflow-card__body"><p class="coverflow-card__time"><span class="coverflow-card__dot"></span>2:00 AM - Competitive intel refresh</p><p class="coverflow-card__agent"><strong>AGENT:</strong> Scans competitor pages, pricing changes, job postings, press mentions. Updates the living brief.</p><p class="coverflow-card__you"><strong>YOU:</strong> You're asleep. Tomorrow the market landscape is already current.</p></div></div></article>
-          <article class="coverflow-card coverflow-card--cycle" data-cf-index="14"><div class="coverflow-card__inner"><div class="coverflow-card__illus coverflow-card__illus--gray"><span class="coverflow-card__cycle-arrow">→</span><span class="coverflow-card__cycle-time">7:00 AM</span><p class="coverflow-card__cycle">The cycle continues</p></div></div></article>
+          <article class="coverflow-card coverflow-card--cycle" data-cf-index="12"><div class="coverflow-card__inner"><div class="coverflow-card__illus coverflow-card__illus--gray"><span class="coverflow-card__cycle-arrow">→</span><span class="coverflow-card__cycle-time">7:00 AM</span><p class="coverflow-card__cycle">The cycle continues</p></div></div></article>
           <article class="coverflow-card" data-cf-index="15"><div class="coverflow-card__inner"><div class="coverflow-card__illus" style="background:#F5E6F0"></div><div class="coverflow-card__body"><p class="coverflow-card__time"><span class="coverflow-card__dot"></span>9:00 PM - Investor update</p><p class="coverflow-card__agent"><strong>AGENT:</strong> Pulled portfolio data, built dashboard, drafted LP letter, formatted PDF. Ready to send.</p><p class="coverflow-card__you"><strong>YOU:</strong> You're at dinner. The quarterly update wrote itself.</p></div></div></article>
           </div>
         </div>
@@ -2074,11 +1988,9 @@
             <p class="compare-card__desc">A powerful personal agent with its own persistent environment. The future of individual productivity.</p>
             <div class="compare-card__illus">📋</div>
             <p class="compare-card__limit">Built for one person. Your agents can't collaborate, share context, or work as a team.</p>
-            <p class="compare-card__moxt">Moxt is OpenClaw for your whole organization — agents that share context, coordinate, and compound together.</p>
           </div>
           <div class="compare-card__hover">
-            <h3 class="compare-card__hover-title">Direct access.</h3>
-            <p class="compare-card__hover-text">These agents won't use your software through buttons and menus. They'll call APIs, write code, read files, and talk to each other — directly.</p>
+            <p class="compare-card__hover-text">Moxt is OpenClaw for your whole organization — agents that share context, coordinate, and compound together.</p>
           </div>
         </article>
         <article class="compare-card">
@@ -2087,11 +1999,9 @@
             <p class="compare-card__desc">Ask a question, get an answer. Kick off a task, get a result. Incredibly capable, and getting better fast.</p>
             <div class="compare-card__illus">💬</div>
             <p class="compare-card__limit">Every conversation starts from zero. No persistent memory. No workspace. No compounding.</p>
-            <p class="compare-card__moxt">Your agents don't start over every time. They live in a workspace with your data, your rules, and months of accumulated context.</p>
           </div>
           <div class="compare-card__hover">
-            <h3 class="compare-card__hover-title">Direct access.</h3>
-            <p class="compare-card__hover-text">These agents won't use your software through buttons and menus. They'll call APIs, write code, read files, and talk to each other — directly.</p>
+            <p class="compare-card__hover-text">Your agents don't start over every time. They live in a workspace with your data, your rules, and months of accumulated context.</p>
           </div>
         </article>
         <article class="compare-card">
@@ -2100,11 +2010,9 @@
             <p class="compare-card__desc">Beautiful docs. Rich collaboration. The workspace that defined how modern teams organize knowledge.</p>
             <div class="compare-card__illus">📄</div>
             <p class="compare-card__limit">Designed for humans to read and write. AI is bolted on, not native. Your agents can't truly live here.</p>
-            <p class="compare-card__moxt">Moxt is a workspace designed for agents first — where AI reads, writes, acts, and learns natively.</p>
           </div>
           <div class="compare-card__hover">
-            <h3 class="compare-card__hover-title">Direct access.</h3>
-            <p class="compare-card__hover-text">These agents won't use your software through buttons and menus. They'll call APIs, write code, read files, and talk to each other — directly.</p>
+            <p class="compare-card__hover-text">Moxt is a workspace designed for agents first — where AI reads, writes, acts, and learns natively.</p>
           </div>
         </article>
         <article class="compare-card">
@@ -2113,11 +2021,9 @@
             <p class="compare-card__desc">The most powerful AI coding environments available. If you're an engineer, these are essential.</p>
             <div class="compare-card__illus">⚡</div>
             <p class="compare-card__limit">Built for code. Not for the other 90% of your team's work — strategy, ops, marketing, finance, client management.</p>
-            <p class="compare-card__moxt">Moxt brings the same agentic power to every function, not just engineering.</p>
           </div>
           <div class="compare-card__hover">
-            <h3 class="compare-card__hover-title">Direct access.</h3>
-            <p class="compare-card__hover-text">These agents won't use your software through buttons and menus. They'll call APIs, write code, read files, and talk to each other — directly.</p>
+            <p class="compare-card__hover-text">Moxt brings the same agentic power to every function, not just engineering.</p>
           </div>
         </article>
       </div>
@@ -2162,19 +2068,9 @@
         <div class="conv-glow"></div>
       </div>
 
-      <!-- Phase 1: More Context. More Magic. -->
-      <div class="conv-phrase-1">
-        <p class="conv-headline">More <em class="conv-em"> Context</em>.<br>More Magic.</p>
-      </div>
-
-      <!-- Phase 2: Moxt morph -->
+      <!-- 单一演变：More Context → Moxt，logo 滑入，副标题、按钮依次出现 -->
       <div class="conv-phrase-2">
-        <p class="conv-moxt-text"><span class="m-mo">Mo</span><span class="m-re">re</span><span class="m-sp"> </span><span class="m-conte">Conte</span><span class="m-xt">xt.</span></p>
-      </div>
-
-      <!-- Phase 3: CTA — Logo + Moxt，副标题在下，按钮最下，不重叠 -->
-      <div class="conv-cta-wrap">
-        <div class="conv-cta-brand">
+        <div class="conv-brand-row">
           <div class="conv-cta-logo" aria-hidden="true">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 90 100" fill="none">
               <path d="M5.45 78.74C2.08 76.77 0 73.16 0 69.25V30.66C0 26.76 2.07 23.15 5.44 21.18L39.15 1.5C42.57-.5 46.8-.5 50.22 1.5L83.84 21.13C87.21 23.1 89.28 26.71 89.28 30.61v38.92C89.28 73.43 87.21 77.04 83.84 79.01L50.44 98.5C47.02 100.5 42.8 100.5 39.38 98.51L5.45 78.74z" fill="#29C16A"/>
@@ -2182,7 +2078,7 @@
               <path d="M0 0l.01 25.88 22.54 12.93V12.9L0 0z" transform="translate(22.2 36.83)" fill="#29C16A"/>
             </svg>
           </div>
-          <span class="conv-cta-moxt">Moxt.</span>
+          <p class="conv-moxt-text"><span class="m-mo">Mo</span><span class="m-re">re</span><span class="m-sp"> </span><span class="m-conte">Conte</span><span class="m-xt">xt.</span></p>
         </div>
         <p class="conv-cta-sub">The workspace where your AI Agents live, learn, and build — together.</p>
         <a href="#" class="btn btn-green">Get Started Free →</a>
@@ -2488,15 +2384,18 @@
       });
 
       // Hide phase layers
-      gsap.set(['.conv-glow-wrap', '.conv-phrase-1', '.conv-phrase-2', '.conv-cta-wrap'], { opacity: 0 });
-      gsap.set(['.conv-phrase-1', '.conv-phrase-2', '.conv-cta-wrap'], { y: 28 });
+      gsap.set(['.conv-glow-wrap', '.conv-phrase-2'], { opacity: 0 });
+      gsap.set('.conv-phrase-2', { y: 28 });
+      gsap.set('.conv-cta-logo', { opacity: 0, y: 32, maxWidth: 0 });
+      gsap.set('.conv-cta-sub', { opacity: 0, y: 12 });
+      gsap.set('.conv-phrase-2 .btn-green', { opacity: 0, y: 8 });
 
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: section,
           start: 'top top',
           end: 'bottom bottom',
-          scrub: 1.5,
+          scrub: 2.2,
         },
       });
 
@@ -2505,7 +2404,7 @@
         opacity: 1,
         duration: 2,
         stagger: { amount: 1.5, from: 'random' },
-        ease: 'power2.out',
+        ease: 'sine.out',
       }, 0);
 
       // Phase 2 (t=2.5–6): Icons converge to center and vanish
@@ -2515,30 +2414,29 @@
         opacity: 0,
         duration: 3,
         stagger: { amount: 1.2, from: 'edges' },
-        ease: 'power3.in',
+        ease: 'sine.inOut',
       }, 2.5);
 
       // Phase 3 (t=5–7): Glow burst
-      tl.to('.conv-glow-wrap', { opacity: 1, scale: 1, duration: 0.7 }, 5.2);
-      tl.to('.conv-glow-wrap', { opacity: 0, scale: 1.7, duration: 0.9 }, 6.3);
+      tl.to('.conv-glow-wrap', { opacity: 1, scale: 1, duration: 0.7, ease: 'sine.inOut' }, 5.2);
+      tl.to('.conv-glow-wrap', { opacity: 0, scale: 1.7, duration: 0.9, ease: 'sine.inOut' }, 6.3);
 
-      // Phase 4 (t=7.2–9.5): "More Context. More Magic."
-      tl.to('.conv-phrase-1', { opacity: 1, y: 0, duration: 0.8 }, 7.2);
-      tl.to('.conv-phrase-1', { opacity: 0, y: -20, duration: 0.5 }, 9.5);
+      // Phase 4 (t=7.2): "More Context." 入场（同一元素）
+      tl.to('.conv-phrase-2', { opacity: 1, y: 0, duration: 0.6, ease: 'sine.out' }, 7.2);
 
-      // Phase 5 (t=10–12.5): Moxt morph
-      tl.to('.conv-phrase-2', { opacity: 1, y: 0, duration: 0.8 }, 10.2);
+      // Phase 5 (t=9.2–10.5): Moxt morph — re/sp/conte 淡出，同一文字演变
       tl.to(['.m-re', '.m-sp', '.m-conte'], {
         opacity: 0,
         width: 0,
-        duration: 0.7,
-        stagger: 0.2,
-        ease: 'power2.inOut',
-      }, 11.8);
+        duration: 0.5,
+        stagger: 0.12,
+        ease: 'sine.inOut',
+      }, 9.2);
 
-      // Phase 6 (t=13): CTA
-      tl.to('.conv-phrase-2', { opacity: 0, duration: 0.3 }, 13);
-      tl.to('.conv-cta-wrap', { opacity: 1, y: 0, duration: 0.9 }, 13.2);
+      // Phase 6 (t=10.5–12): 同一 Moxt 上，logo 自下而上滑入，副标题、按钮依次出现
+      tl.to('.conv-cta-logo', { opacity: 1, y: 0, maxWidth: 130, duration: 0.6, ease: 'sine.out' }, 10.5);
+      tl.to('.conv-cta-sub', { opacity: 1, y: 0, duration: 0.5, ease: 'sine.out' }, 10.9);
+      tl.to('.conv-phrase-2 .btn-green', { opacity: 1, y: 0, duration: 0.4, ease: 'sine.out' }, 11.2);
     },
   }))();
 
@@ -2550,16 +2448,14 @@
     const CARD_WIDTH = 336;
     const GAP = 24;
     const CARD_STEP = CARD_WIDTH + GAP;
-    const TOTAL_CARDS = document.querySelectorAll('.coverflow-card').length;
-    const CYCLE_WIDTH = CARD_STEP * (TOTAL_CARDS / 2);
     const SPEED_PX_PER_SEC = CARD_STEP / 4.5;
     const track = () => document.querySelector('.coverflow__track');
     const stage = () => document.querySelector('.coverflow__stage');
-    let tween = null;
     let autoTween = null;
     let dragStartX = 0, dragStartTx = 0;
     let isDragging = false;
     let centerX = 0;
+    let stopX = 0;
 
     function getX() { const tr = track(); return tr ? gsap.getProperty(tr, 'x') || 0 : 0; }
     function setX(v) { const tr = track(); if (tr) gsap.set(tr, { x: v }); }
@@ -2567,19 +2463,15 @@
     function runAutoPlay() {
       if (autoTween) autoTween.kill();
       const current = getX();
-      const target = current <= centerX - CYCLE_WIDTH ? centerX : current - CYCLE_WIDTH;
-      const dur = Math.abs(target - current) / SPEED_PX_PER_SEC;
+      if (current <= stopX) return;
+      const dur = Math.abs(stopX - current) / SPEED_PX_PER_SEC;
       const tr = track();
       if (!tr) return;
       autoTween = gsap.to(tr, {
-        x: target,
+        x: stopX,
         duration: dur,
         ease: 'none',
-        onComplete: () => {
-          if (getX() <= centerX - CYCLE_WIDTH) setX(centerX);
-          autoTween = null;
-          runAutoPlay();
-        },
+        onComplete: () => { autoTween = null; },
       });
     }
 
@@ -2606,15 +2498,16 @@
       const up = (ev) => {
         const dx = getPointerX(ev) - dragStartX;
         let tx = dragStartTx + dx;
-        if (tx <= centerX - CYCLE_WIDTH) tx = centerX;
-        else if (tx > centerX) tx = tx - CYCLE_WIDTH;
+        const allCards = document.querySelectorAll('.coverflow-card');
+        const maxScroll = -(allCards.length * CARD_STEP - window.innerWidth);
+        if (tx < maxScroll) tx = maxScroll;
+        if (tx > centerX) tx = centerX;
         setX(tx);
         document.removeEventListener('mousemove', move);
         document.removeEventListener('mouseup', up);
         document.removeEventListener('touchmove', move, { passive: true });
         document.removeEventListener('touchend', up);
         setTimeout(() => { isDragging = false; }, 50);
-        setTimeout(runAutoPlay, 600);
       };
       document.addEventListener('mousemove', move);
       document.addEventListener('mouseup', up);
@@ -2628,6 +2521,16 @@
         const stageW = st ? st.offsetWidth : window.innerWidth;
         centerX = stageW / 2 - CARD_WIDTH / 2;
         setX(centerX);
+
+        const cycleCard = document.querySelector('.coverflow-card--cycle');
+        if (cycleCard) {
+          const cards = Array.from(document.querySelectorAll('.coverflow-card'));
+          const cycleIdx = cards.indexOf(cycleCard);
+          stopX = centerX - (cycleIdx * CARD_STEP);
+        } else {
+          stopX = centerX - (6 * CARD_STEP);
+        }
+
         gsap.from('.coverflow-section__eyebrow', {
           opacity: 0, y: 16, duration: 0.8, ease: 'expo.out',
           scrollTrigger: { trigger: '#coverflow', start: 'top 82%' },
@@ -2643,8 +2546,6 @@
         if (st) {
           st.addEventListener('mousedown', onPointerDown);
           st.addEventListener('touchstart', onPointerDown, { passive: true });
-          st.addEventListener('mouseenter', stopAutoPlay);
-          st.addEventListener('mouseleave', () => setTimeout(runAutoPlay, 800));
         }
         runAutoPlay();
       },
