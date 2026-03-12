@@ -762,11 +762,11 @@
       color: #D0D0CB;
     }
     .coverflow-card--cycle .coverflow-card__inner {
-      background: #1A1A1A;
+      background: #F3F3F0;
       cursor: pointer;
     }
     .coverflow-card--cycle .coverflow-card__illus {
-      background: #1A1A1A !important;
+      background: #F3F3F0 !important;
       display: flex;
       flex-direction: column;
       align-items: flex-start;
@@ -784,18 +784,18 @@
       color: var(--fg);
     }
     .coverflow-card--cycle .coverflow-card__cycle-time {
-      color: #F0F0ED;
+      color: var(--fg);
     }
     .coverflow-card--cycle .coverflow-card__cycle-arrow {
       font-size: 2rem;
-      color: #F0F0ED;
+      color: var(--fg);
       line-height: 1;
       display: block;
       margin-bottom: 1rem;
     }
     .coverflow-card--cycle .coverflow-card__cycle {
       font-size: 0.9375rem;
-      color: #A0A09A;
+      color: var(--fg-mid);
       line-height: 1.5;
       margin: 0;
     }
@@ -1023,8 +1023,10 @@
       transform: translateY(14px);
       transition: background 0.2s;
     }
-    .bc:hover { background: var(--green-light); }
-    .bc:hover .bc-arrow { opacity: 1; transform: translate(0,0); }
+    .bc:hover { background: var(--green); color: #fff; }
+    .bc:hover .bc-arrow { opacity: 1; transform: translate(0,0); color: #fff; }
+    .bc:hover .bc-name, .bc:hover .bc-desc { color: #fff; }
+    .bc:hover .bc-icon { stroke: #fff; }
 
     .bc-top { display: flex; align-items: flex-start; justify-content: space-between; }
 
@@ -1192,7 +1194,7 @@
       top: 0;
       height: 100vh;
       overflow: hidden;
-      background: var(--gray);
+      background: #F7F8F6;
       display: flex;
       align-items: center;
       justify-content: center;
